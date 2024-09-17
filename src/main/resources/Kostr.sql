@@ -34,6 +34,7 @@ CREATE TABLE Components (
     name varchar(250),
     type componentType,
     vatRate NUMERIC default null,
+    totalPrice NUMERIC default null,
     projectId UUID references Projects(id)
 );
 
