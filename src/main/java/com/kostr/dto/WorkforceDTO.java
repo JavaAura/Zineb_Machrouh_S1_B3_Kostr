@@ -9,6 +9,8 @@ public class WorkforceDTO extends ComponentDTO{
     private double hoursWorked;
     private double workerProductivity;
 
+    public WorkforceDTO(){}
+    
     public WorkforceDTO(UUID id, String name, ComponentType type, double vatRate, double totalPrice, UUID projectId, double hourlyRate, double hoursWorked, double workerProductivity) {
         super(id, name, type, vatRate, totalPrice, projectId);
         this.hourlyRate = hourlyRate;

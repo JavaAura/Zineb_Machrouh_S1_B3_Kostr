@@ -12,6 +12,8 @@ public class ProjectDTO {
     private ProjectStatus status;
     private UUID clientId;
 
+    public ProjectDTO() {}
+
     public ProjectDTO(UUID id, String name, double profitMargin, double totalCost, ProjectStatus status, UUID clientId) {
         this.id = id;
         this.name = name;

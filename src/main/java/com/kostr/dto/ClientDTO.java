@@ -10,6 +10,9 @@ public class ClientDTO {
     private String phoneNumber;
     private boolean isProfessional;
 
+    public ClientDTO() {
+    }
+
     public ClientDTO(UUID id, String name, String address, String phoneNumber, boolean isProfessional) {
         this.id = id;
         this.name = name;

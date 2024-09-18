@@ -11,6 +11,8 @@ public class QuoteDTO {
     private LocalDate validityDate;
     private boolean isAccepted;
 
+    public QuoteDTO() {}
+
     public QuoteDTO(UUID id, UUID projectId, double estimatedCost, LocalDate issueDate, LocalDate validityDate, boolean isAccepted) {
         this.id = id;
         this.projectId = projectId;

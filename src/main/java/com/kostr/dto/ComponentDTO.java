@@ -12,6 +12,8 @@ public class ComponentDTO {
     private double totalPrice;
     private UUID projectId;
 
+    public ComponentDTO(){}
+
     public ComponentDTO(UUID id, String name, ComponentType type, double vatRate, double totalPrice, UUID projectId) {
         this.id = id;
         this.name = name;
