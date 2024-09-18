@@ -23,7 +23,7 @@ CREATE TABLE Projects (
 CREATE TABLE Quotes (
     id UUID primary key not null,
     projectId UUID references Projects(id),
-    estimatedAmount NUMERIC default 0.0,
+    estimatedCost NUMERIC default 0.0,
     issueDate DATE default current_date,
     validityDate DATE default null,
     isAccepted boolean not null default false
