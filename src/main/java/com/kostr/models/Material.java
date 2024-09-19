@@ -1,9 +1,5 @@
 package main.java.com.kostr.models;
 
-import main.java.com.kostr.types.ComponentType;
-
-import java.util.UUID;
-
 public class Material {
     private double unitCost;
     private double quantity;

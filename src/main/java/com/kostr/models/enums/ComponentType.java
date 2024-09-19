@@ -1,4 +1,4 @@
-package main.java.com.kostr.types;
+package main.java.com.kostr.models.enums;
 
 public enum ComponentType {
     MATERIALS,

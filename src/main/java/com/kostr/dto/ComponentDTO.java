@@ -1,6 +1,6 @@
 package main.java.com.kostr.dto;
 
-import main.java.com.kostr.types.ComponentType;
+import main.java.com.kostr.models.enums.ComponentType;
 
 import java.util.UUID;
 

@@ -1,6 +1,6 @@
 package main.java.com.kostr.dto;
 
-import main.java.com.kostr.types.ProjectStatus;
+import main.java.com.kostr.models.enums.ProjectStatus;
 
 import java.util.UUID;
 

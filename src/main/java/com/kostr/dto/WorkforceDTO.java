@@ -1,6 +1,6 @@
 package main.java.com.kostr.dto;
 
-import main.java.com.kostr.types.ComponentType;
+import main.java.com.kostr.models.enums.ComponentType;
 
 import java.util.UUID;
 
@@ -10,7 +10,7 @@ public class WorkforceDTO extends ComponentDTO{
     private double workerProductivity;
 
     public WorkforceDTO(){}
-    
+
     public WorkforceDTO(UUID id, String name, ComponentType type, double vatRate, double totalPrice, UUID projectId, double hourlyRate, double hoursWorked, double workerProductivity) {
         super(id, name, type, vatRate, totalPrice, projectId);
         this.hourlyRate = hourlyRate;

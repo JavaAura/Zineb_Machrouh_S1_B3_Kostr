@@ -1,10 +1,12 @@
 CREATE DATABASE Kostr;
 
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE TYPE projectStatus AS ENUM ('In Progress', 'Done', 'Canceled');
 CREATE TYPE componentType AS ENUM ('Materials', 'Workforce');
 
 CREATE TABLE Clients (
-    id UUID primary key not null,
+    id UUID primary key not null DEFAULT uuid_generate_v4(),
     name varchar(50),
     address varchar(250),
     phoneNumber varchar(20),
@@ -12,7 +14,7 @@ CREATE TABLE Clients (
 );
 
 CREATE TABLE Projects (
-    id UUID primary key not null,
+    id UUID primary key not null DEFAULT uuid_generate_v4(),
     name varchar(250),
     profitMargin NUMERIC default null,
     totalCost NUMERIC default null,
@@ -21,7 +23,7 @@ CREATE TABLE Projects (
 );
 
 CREATE TABLE Quotes (
-    id UUID primary key not null,
+    id UUID primary key not null DEFAULT uuid_generate_v4(),
     projectId UUID references Projects(id),
     estimatedCost NUMERIC default 0.0,
     issueDate DATE default current_date,
@@ -30,7 +32,7 @@ CREATE TABLE Quotes (
 );
 
 CREATE TABLE Components (
-    id UUID primary key not null,
+    id UUID primary key not null DEFAULT uuid_generate_v4(),
     name varchar(250),
     type componentType,
     vatRate NUMERIC default null,
