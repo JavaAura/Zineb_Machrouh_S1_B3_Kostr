@@ -9,16 +9,18 @@ public class Project {
     private String name;
     private double profitMargin;
     private double totalCost;
+    private double surfaceArea;
     private ProjectStatus status;
     private UUID clientId;
 
     public Project() {}
 
-    public Project(UUID id, String name, double profitMargin, double totalCost, ProjectStatus status, UUID clientId) {
+    public Project(UUID id, String name, double profitMargin, double totalCost, double surfaceArea, ProjectStatus status, UUID clientId) {
         this.id = id;
         this.name = name;
         this.profitMargin = profitMargin;
         this.totalCost = totalCost;
+        this.surfaceArea = surfaceArea;
         this.status = status;
         this.clientId = clientId;
     }
@@ -63,5 +65,12 @@ public class Project {
     }
     public void setClientId(UUID clientId) {
         this.clientId = clientId;
+    }
+
+    public double getSurfaceArea() {
+        return surfaceArea;
+    }
+    public void setSurfaceArea(double surfaceArea) {
+        this.surfaceArea = surfaceArea;
     }
 }

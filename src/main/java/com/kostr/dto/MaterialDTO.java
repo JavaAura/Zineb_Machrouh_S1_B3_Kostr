@@ -12,7 +12,7 @@ public class MaterialDTO extends ComponentDTO{
 
     public MaterialDTO(){}
 
-    public MaterialDTO(UUID id, String name, ComponentType type, double vatRate, double totalPrice, UUID projectId, double unitCost, double quantity, double transportCost, double qualityCoefficient) {
+    public MaterialDTO(UUID id, String name, UUID type, double vatRate, double totalPrice, UUID projectId, double unitCost, double quantity, double transportCost, double qualityCoefficient) {
         super(id, name, type, vatRate, totalPrice, projectId);
         this.unitCost = unitCost;
         this.quantity = quantity;

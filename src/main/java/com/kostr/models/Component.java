@@ -7,14 +7,14 @@ import java.util.UUID;
 public class Component {
     private UUID id;
     private String name;
-    private ComponentType type;
+    private UUID type;
     private double vatRate;
     private double totalPrice;
     private UUID projectId;
 
     public Component(){}
 
-    public Component(UUID id, String name, ComponentType type, double vatRate, double totalPrice, UUID projectId) {
+    public Component(UUID id, String name, UUID type, double vatRate, double totalPrice, UUID projectId) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -37,10 +37,10 @@ public class Component {
         this.name = name;
     }
 
-    public ComponentType getType() {
+    public UUID getType() {
         return type;
     }
-    public void setType(ComponentType type) {
+    public void setType(UUID type) {
         this.type = type;
     }
 

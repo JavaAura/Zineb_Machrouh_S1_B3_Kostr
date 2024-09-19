@@ -7,16 +7,18 @@ public class ClientDTO {
     private UUID id;
     private String name;
     private String address;
+    private String email;
     private String phoneNumber;
     private boolean isProfessional;
 
     public ClientDTO() {
     }
 
-    public ClientDTO(UUID id, String name, String address, String phoneNumber, boolean isProfessional) {
+    public ClientDTO(UUID id, String name, String address, String email, String phoneNumber, boolean isProfessional) {
         this.id = id;
         this.name = name;
         this.address = address;
+        this.email = email;
         this.phoneNumber = phoneNumber;
         this.isProfessional = isProfessional;
     }
@@ -57,8 +59,15 @@ public class ClientDTO {
         isProfessional = professional;
     }
 
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String[] getAttributes() {
-        return new String[]{id.toString(), name, address, phoneNumber, String.valueOf(isProfessional)};
+        return new String[]{id.toString(), name, address,email, phoneNumber, String.valueOf(isProfessional)};
     }
 
     @Override
@@ -67,6 +76,7 @@ public class ClientDTO {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
+                ", email='" + email + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", isProfessional=" + isProfessional +
                 '}';

@@ -1,6 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="Kostr">
-    <output-path>$PROJECT_DIR$/src/main/target</output-path>
-    <root id="archive" name="Kostr.jar" />
-  </artifact>
-</component>

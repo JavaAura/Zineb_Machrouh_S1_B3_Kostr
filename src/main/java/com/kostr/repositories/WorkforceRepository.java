@@ -20,7 +20,7 @@ public class WorkforceRepository implements WorkforceRepositoryInterface {
         String query = "INSERT INTO Workforce (name, type, vatRate, totalPrice, projectId, hourlyRate, hoursWorked, workerProductivity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(2, workforce.getName());
-            ps.setObject(3, workforce.getType());
+            ps.setString(3, workforce.getType().toString());
             ps.setDouble(4, workforce.getVatRate());
             ps.setDouble(5, workforce.getTotalPrice());
             ps.setString(6, workforce.getProjectId().toString());
@@ -45,7 +45,7 @@ public class WorkforceRepository implements WorkforceRepositoryInterface {
         String query = "UPDATE Workforce SET name = ?, type = ?, vatRate = ?, totalPrice = ?, projectId = ?, hourlyRate = ?, hoursWorked = ?, workerProductivity = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, workforce.getName());
-            ps.setObject(2, workforce.getType());
+            ps.setString(2, workforce.getType().toString());
             ps.setDouble(3, workforce.getVatRate());
             ps.setDouble(4, workforce.getTotalPrice());
             ps.setString(5, workforce.getProjectId().toString());

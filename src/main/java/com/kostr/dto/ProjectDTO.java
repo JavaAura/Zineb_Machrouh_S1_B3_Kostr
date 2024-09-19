@@ -9,16 +9,18 @@ public class ProjectDTO {
     private String name;
     private double profitMargin;
     private double totalCost;
+    private double surfaceArea;
     private ProjectStatus status;
     private UUID clientId;
 
     public ProjectDTO() {}
 
-    public ProjectDTO(UUID id, String name, double profitMargin, double totalCost, ProjectStatus status, UUID clientId) {
+    public ProjectDTO(UUID id, String name, double profitMargin, double totalCost, double surfaceArea, ProjectStatus status, UUID clientId) {
         this.id = id;
         this.name = name;
         this.profitMargin = profitMargin;
         this.totalCost = totalCost;
+        this.surfaceArea = surfaceArea;
         this.status = status;
         this.clientId = clientId;
     }
@@ -65,8 +67,15 @@ public class ProjectDTO {
         this.clientId = clientId;
     }
 
+    public double getSurfaceArea() {
+        return surfaceArea;
+    }
+    public void setSurfaceArea(double surfaceArea) {
+        this.surfaceArea = surfaceArea;
+    }
+
     public String[] getAttributes() {
-        return new String[]{id.toString(), name, String.valueOf(profitMargin), String.valueOf(totalCost), status.toString(), clientId.toString()};
+        return new String[]{id.toString(), name, String.valueOf(profitMargin), String.valueOf(totalCost), String.valueOf(surfaceArea), status.toString(), clientId.toString()};
     }
 
     @Override
@@ -76,6 +85,7 @@ public class ProjectDTO {
                 ", name='" + name + '\'' +
                 ", profitMargin=" + profitMargin +
                 ", totalCost=" + totalCost +
+                ", surfaceArea=" + surfaceArea +
                 ", status=" + status +
                 ", clientId=" + clientId +
                 '}';
@@ -90,6 +100,7 @@ public class ProjectDTO {
 
         if (Double.compare(that.profitMargin, profitMargin) != 0) return false;
         if (Double.compare(that.totalCost, totalCost) != 0) return false;
+        if (Double.compare(that.surfaceArea, surfaceArea) != 0) return false;
         if (!id.equals(that.id)) return false;
         if (!name.equals(that.name)) return false;
         if (status != that.status) return false;

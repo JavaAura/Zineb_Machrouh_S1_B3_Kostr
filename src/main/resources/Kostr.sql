@@ -9,6 +9,7 @@ CREATE TABLE Clients (
     id UUID primary key not null DEFAULT uuid_generate_v4(),
     name varchar(50),
     address varchar(250),
+    email varchar(250) unique not null,
     phoneNumber varchar(20),
     isProfessional boolean default false
 );
@@ -18,6 +19,7 @@ CREATE TABLE Projects (
     name varchar(250),
     profitMargin NUMERIC default null,
     totalCost NUMERIC default null,
+    surfaceArea NUMERIC default null,
     status projectStatus default 'In Progress',
     clientId UUID references Clients(id)
 );
@@ -34,7 +36,7 @@ CREATE TABLE Quotes (
 CREATE TABLE Components (
     id UUID primary key not null DEFAULT uuid_generate_v4(),
     name varchar(250),
-    type componentType,
+    type UUID references ComponentTypes(id),
     vatRate NUMERIC default null,
     totalPrice NUMERIC default null,
     projectId UUID references Projects(id)
@@ -52,3 +54,9 @@ CREATE TABLE Workforce(
     hoursWorked NUMERIC default null,
     workerProductivity NUMERIC default 1.0
 ) inherits (Components);
+
+CREATE TABLE ComponentTypes(
+    id UUID primary key not null DEFAULT uuid_generate_v4(),
+    name varchar(250),
+    type componentType
+);

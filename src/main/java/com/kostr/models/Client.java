@@ -6,15 +6,17 @@ public class Client {
     private UUID id;
     private String name;
     private String address;
+    private String email;
     private String phoneNumber;
     private boolean isProfessional;
 
     public Client(){}
 
-    public Client(UUID id, String name, String address, String phoneNumber, boolean isProfessional) {
+    public Client(UUID id, String name, String address, String email, String phoneNumber, boolean isProfessional) {
         this.id = id;
         this.name = name;
         this.address = address;
+        this.email = email;
         this.phoneNumber = phoneNumber;
         this.isProfessional = isProfessional;
     }
@@ -54,4 +56,14 @@ public class Client {
     public void setProfessional(boolean professional) {
         isProfessional = professional;
     }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }
+
+

@@ -19,15 +19,15 @@ public class MaterialRepository implements MaterialRepositoryInterface {
     public void addMaterial(MaterialDTO material) throws SQLException {
         String query = "INSERT INTO Materials (name, type, vatRate, totalPrice, projectId, unitCost, quantity, transportCost, qualityCoefficient) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(2, material.getName());
-            ps.setObject(3, material.getType());
-            ps.setDouble(4, material.getVatRate());
-            ps.setDouble(5, material.getTotalPrice());
-            ps.setString(6, material.getProjectId().toString());
-            ps.setDouble(7, material.getUnitCost());
-            ps.setDouble(8, material.getQuantity());
-            ps.setDouble(9, material.getTransportCost());
-            ps.setDouble(10, material.getQualityCoefficient());
+            ps.setString(1, material.getName());
+            ps.setString(2, material.getType().toString());
+            ps.setDouble(3, material.getVatRate());
+            ps.setDouble(4, material.getTotalPrice());
+            ps.setString(5, material.getProjectId().toString());
+            ps.setDouble(6, material.getUnitCost());
+            ps.setDouble(7, material.getQuantity());
+            ps.setDouble(8, material.getTransportCost());
+            ps.setDouble(9, material.getQualityCoefficient());
             ps.executeUpdate();
         }
     }
@@ -43,17 +43,18 @@ public class MaterialRepository implements MaterialRepositoryInterface {
 
     @Override
     public void updateMaterial(MaterialDTO material) {
-        String query = "UPDATE Materials SET name = ?, vatRate = ?, totalPrice = ?, projectId = ?, unitCost = ?, quantity = ?, transportCost = ?, qualityCoefficient = ? WHERE id = ?";
+        String query = "UPDATE Materials SET name = ?, vatRate = ?, type = ?, totalPrice = ?, projectId = ?, unitCost = ?, quantity = ?, transportCost = ?, qualityCoefficient = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, material.getName());
             ps.setDouble(2, material.getVatRate());
-            ps.setDouble(3, material.getTotalPrice());
-            ps.setString(4, material.getProjectId().toString());
-            ps.setDouble(5, material.getUnitCost());
-            ps.setDouble(6, material.getQuantity());
-            ps.setDouble(7, material.getTransportCost());
-            ps.setDouble(8, material.getQualityCoefficient());
-            ps.setString(9, material.getId().toString());
+            ps.setString(3, material.getType().toString());
+            ps.setDouble(4, material.getTotalPrice());
+            ps.setString(5, material.getProjectId().toString());
+            ps.setDouble(6, material.getUnitCost());
+            ps.setDouble(7, material.getQuantity());
+            ps.setDouble(8, material.getTransportCost());
+            ps.setDouble(9, material.getQualityCoefficient());
+            ps.setString(10, material.getId().toString());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
