@@ -2,8 +2,9 @@ CREATE DATABASE Kostr;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-CREATE TYPE projectStatus AS ENUM ('In Progress', 'Done', 'Canceled');
-CREATE TYPE componentType AS ENUM ('Materials', 'Workforce');
+CREATE TYPE projectStatus AS ENUM ('IN_PROGRESS', 'DONE', 'CANCELLED');
+CREATE TYPE componentType AS ENUM ('MATERIALS', 'WORKFORCE');
+CREATE TYPE projectType AS ENUM ('RENOVATION', 'CONSTRUCTION');
 
 CREATE TABLE Clients (
     id UUID primary key not null DEFAULT uuid_generate_v4(),
@@ -20,7 +21,8 @@ CREATE TABLE Projects (
     profitMargin NUMERIC default null,
     totalCost NUMERIC default null,
     surfaceArea NUMERIC default null,
-    status projectStatus default 'In Progress',
+    type projectType default null,
+    status projectStatus default 'IN_PROGRESS',
     clientId UUID references Clients(id)
 );
 
@@ -33,30 +35,29 @@ CREATE TABLE Quotes (
     isAccepted boolean not null default false
 );
 
+CREATE TABLE ComponentTypes(
+                               id UUID primary key not null DEFAULT uuid_generate_v4(),
+                               name varchar(250),
+                               type componentType
+);
 CREATE TABLE Components (
-    id UUID primary key not null DEFAULT uuid_generate_v4(),
-    name varchar(250),
-    type UUID references ComponentTypes(id),
-    vatRate NUMERIC default null,
-    totalPrice NUMERIC default null,
-    projectId UUID references Projects(id)
+                            id UUID primary key not null DEFAULT uuid_generate_v4(),
+                            name varchar(250),
+                            type UUID references ComponentTypes(id),
+                            vatRate NUMERIC default null,
+                            totalPrice NUMERIC default null,
+                            projectId UUID references Projects(id)
 );
 
 CREATE TABLE Materials(
-    unitCost NUMERIC default null,
-    quantity NUMERIC default null,
-    transportCost NUMERIC default null,
-    qualityCoefficient  NUMERIC default 1.0
+                          unitCost NUMERIC default null,
+                          quantity NUMERIC default null,
+                          transportCost NUMERIC default null,
+                          qualityCoefficient  NUMERIC default 1.0
 ) inherits (Components);
 
 CREATE TABLE Workforce(
-    hourlyRate NUMERIC default null,
-    hoursWorked NUMERIC default null,
-    workerProductivity NUMERIC default 1.0
+                          hourlyRate NUMERIC default null,
+                          hoursWorked NUMERIC default null,
+                          workerProductivity NUMERIC default 1.0
 ) inherits (Components);
-
-CREATE TABLE ComponentTypes(
-    id UUID primary key not null DEFAULT uuid_generate_v4(),
-    name varchar(250),
-    type componentType
-);

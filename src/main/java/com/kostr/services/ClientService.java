@@ -6,9 +6,11 @@ import main.java.com.kostr.services.interfaces.ClientServiceInterface;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 
 public class ClientService implements ClientServiceInterface {
     private final ClientRepository clientRepository;
+    private static final Logger logger = Logger.getLogger(ClientService.class.getName());
 
     public ClientService(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
@@ -16,8 +18,12 @@ public class ClientService implements ClientServiceInterface {
 
     @Override
     public void addClient(ClientDTO client) throws SQLException {
-        clientRepository.addClient(client);
-        System.out.println("Client added successfully");
+        if (client.getName().isEmpty() || client.getAddress().isEmpty() || client.getEmail().isEmpty() || client.getPhoneNumber().isEmpty()) {
+            logger.severe("All fields must be filled in");
+        }else{
+            clientRepository.addClient(client);
+            logger.info("Client added successfully");
+        }
     }
 
     @Override
