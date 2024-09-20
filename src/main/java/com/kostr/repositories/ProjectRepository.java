@@ -17,12 +17,13 @@ public class ProjectRepository implements ProjectRepositoryInterface {
 
     @Override
     public void addProject(ProjectDTO project) throws SQLException {
-        String query = "INSERT INTO Projects (name, profitMargin, totalCost, surfaceArea, status, clientId) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Projects (name, profitMargin, totalCost, surfaceArea, type, status, clientId) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, project.getName());
             ps.setDouble(2, project.getProfitMargin());
             ps.setDouble(3, project.getTotalCost());
             ps.setDouble(4, project.getSurfaceArea());
+            ps.setObject(5, project.getType());
             ps.setObject(5, project.getStatus());
             ps.setString(6, project.getClientId().toString());
             ps.executeUpdate();
@@ -40,15 +41,16 @@ public class ProjectRepository implements ProjectRepositoryInterface {
 
     @Override
     public void updateProject(ProjectDTO project) throws SQLException {
-        String query = "UPDATE Projects SET name = ?, profitMargin = ?, totalCost = ?, surfaceArea = ?, status = ?, clientId = ? WHERE id = ?";
+        String query = "UPDATE Projects SET name = ?, profitMargin = ?, totalCost = ?, surfaceArea = ?, type = ?, status = ?, clientId = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, project.getName());
             ps.setDouble(2, project.getProfitMargin());
             ps.setDouble(3, project.getTotalCost());
-            ps.setDouble(3, project.getTotalCost());
-            ps.setObject(4, project.getStatus());
-            ps.setString(5, project.getClientId().toString());
-            ps.setString(6, project.getId().toString());
+            ps.setDouble(4, project.getSurfaceArea());
+            ps.setObject(5, project.getType());
+            ps.setObject(6, project.getStatus());
+            ps.setString(7, project.getClientId().toString());
+            ps.setString(8, project.getId().toString());
             ps.executeUpdate();
         }
     }

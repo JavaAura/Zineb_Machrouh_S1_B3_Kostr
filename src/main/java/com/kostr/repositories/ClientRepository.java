@@ -19,11 +19,11 @@ public class ClientRepository implements ClientRepositoryInterface {
     public void addClient(ClientDTO client) throws SQLException {
         String query = "INSERT INTO Clients (name, address, email, phoneNumber, isProfessional) VALUES ( ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(2, client.getName());
-            ps.setString(3, client.getAddress());
-            ps.setString(4, client.getEmail());
-            ps.setString(5, client.getPhoneNumber());
-            ps.setBoolean(6, client.isProfessional());
+            ps.setString(1, client.getName());
+            ps.setString(2, client.getAddress());
+            ps.setString(3, client.getEmail());
+            ps.setString(4, client.getPhoneNumber());
+            ps.setBoolean(5, client.isProfessional());
             ps.executeUpdate();
         }
     }

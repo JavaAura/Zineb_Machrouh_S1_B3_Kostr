@@ -1,6 +1,7 @@
 package main.java.com.kostr.dto;
 
 import main.java.com.kostr.models.enums.ProjectStatus;
+import main.java.com.kostr.models.enums.ProjectType;
 
 import java.util.UUID;
 
@@ -10,17 +11,19 @@ public class ProjectDTO {
     private double profitMargin;
     private double totalCost;
     private double surfaceArea;
+    private ProjectType type;
     private ProjectStatus status;
     private UUID clientId;
 
     public ProjectDTO() {}
 
-    public ProjectDTO(UUID id, String name, double profitMargin, double totalCost, double surfaceArea, ProjectStatus status, UUID clientId) {
+    public ProjectDTO(UUID id, String name, double profitMargin, double totalCost, double surfaceArea, ProjectType type, ProjectStatus status, UUID clientId) {
         this.id = id;
         this.name = name;
         this.profitMargin = profitMargin;
         this.totalCost = totalCost;
         this.surfaceArea = surfaceArea;
+        this.type = type;
         this.status = status;
         this.clientId = clientId;
     }
@@ -74,8 +77,15 @@ public class ProjectDTO {
         this.surfaceArea = surfaceArea;
     }
 
+    public ProjectType getType() {
+        return type;
+    }
+    public void setType(ProjectType type) {
+        this.type = type;
+    }
+
     public String[] getAttributes() {
-        return new String[]{id.toString(), name, String.valueOf(profitMargin), String.valueOf(totalCost), String.valueOf(surfaceArea), status.toString(), clientId.toString()};
+        return new String[]{id.toString(), name, String.valueOf(profitMargin), String.valueOf(totalCost), String.valueOf(surfaceArea), type.toString(), status.toString(), clientId.toString()};
     }
 
     @Override
@@ -86,6 +96,7 @@ public class ProjectDTO {
                 ", profitMargin=" + profitMargin +
                 ", totalCost=" + totalCost +
                 ", surfaceArea=" + surfaceArea +
+                ", type=" + type +
                 ", status=" + status +
                 ", clientId=" + clientId +
                 '}';
@@ -103,6 +114,7 @@ public class ProjectDTO {
         if (Double.compare(that.surfaceArea, surfaceArea) != 0) return false;
         if (!id.equals(that.id)) return false;
         if (!name.equals(that.name)) return false;
+        if (type != that.type) return false;
         if (status != that.status) return false;
         return clientId.equals(that.clientId);
     }

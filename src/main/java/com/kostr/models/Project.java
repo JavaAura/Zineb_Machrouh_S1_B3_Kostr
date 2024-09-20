@@ -1,6 +1,7 @@
 package main.java.com.kostr.models;
 
 import main.java.com.kostr.models.enums.ProjectStatus;
+import main.java.com.kostr.models.enums.ProjectType;
 
 import java.util.UUID;
 
@@ -10,17 +11,19 @@ public class Project {
     private double profitMargin;
     private double totalCost;
     private double surfaceArea;
+    private ProjectType type;
     private ProjectStatus status;
     private UUID clientId;
 
     public Project() {}
 
-    public Project(UUID id, String name, double profitMargin, double totalCost, double surfaceArea, ProjectStatus status, UUID clientId) {
+    public Project(UUID id, String name, double profitMargin, double totalCost, double surfaceArea, ProjectType type, ProjectStatus status, UUID clientId) {
         this.id = id;
         this.name = name;
         this.profitMargin = profitMargin;
         this.totalCost = totalCost;
         this.surfaceArea = surfaceArea;
+        this.type = type;
         this.status = status;
         this.clientId = clientId;
     }
@@ -72,5 +75,12 @@ public class Project {
     }
     public void setSurfaceArea(double surfaceArea) {
         this.surfaceArea = surfaceArea;
+    }
+
+    public ProjectType getType() {
+        return type;
+    }
+    public void setType(ProjectType type) {
+        this.type = type;
     }
 }

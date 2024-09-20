@@ -19,14 +19,14 @@ public class WorkforceRepository implements WorkforceRepositoryInterface {
     public void addWorkforce(WorkforceDTO workforce) throws SQLException {
         String query = "INSERT INTO Workforce (name, type, vatRate, totalPrice, projectId, hourlyRate, hoursWorked, workerProductivity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(2, workforce.getName());
-            ps.setString(3, workforce.getType().toString());
-            ps.setDouble(4, workforce.getVatRate());
-            ps.setDouble(5, workforce.getTotalPrice());
-            ps.setString(6, workforce.getProjectId().toString());
-            ps.setDouble(7, workforce.getHourlyRate());
-            ps.setDouble(8, workforce.getHoursWorked());
-            ps.setDouble(9, workforce.getWorkerProductivity());
+            ps.setString(1, workforce.getName());
+            ps.setString(2, workforce.getType().toString());
+            ps.setDouble(3, workforce.getVatRate());
+            ps.setDouble(4, workforce.getTotalPrice());
+            ps.setString(5, workforce.getProjectId().toString());
+            ps.setDouble(6, workforce.getHourlyRate());
+            ps.setDouble(7, workforce.getHoursWorked());
+            ps.setDouble(8, workforce.getWorkerProductivity());
             ps.executeUpdate();
         }
     }
