@@ -28,16 +28,31 @@ public class ClientService implements ClientServiceInterface {
 
     @Override
     public void removeClient(String id) throws SQLException {
-
+        if (clientRepository.getClientById(id).next()) {
+            clientRepository.removeClient(id);
+            logger.info("Client removed successfully");
+        } else {
+            logger.warning("Client not found");
+        }
     }
 
     @Override
     public void updateClient(ClientDTO client) throws SQLException {
-
+        if (client.getName().isEmpty() || client.getAddress().isEmpty() || client.getEmail().isEmpty() || client.getPhoneNumber().isEmpty()) {
+            logger.severe("All fields must be filled in");
+        }else{
+            clientRepository.updateClient(client);
+            logger.info("Client updated successfully");
+        }
     }
 
     @Override
     public ResultSet getClientById(String id) throws SQLException {
-        return null;
+        if (id.isEmpty()) {
+            logger.severe("ID field must be filled in");
+            return null;
+        }else{
+            return clientRepository.getClientById(id);
+        }
     }
 }

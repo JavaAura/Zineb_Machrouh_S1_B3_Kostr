@@ -1,5 +1,7 @@
 package main.java.com.kostr.dto;
 
+import main.java.com.kostr.models.Client;
+
 import java.util.Objects;
 import java.util.UUID;
 
@@ -88,6 +90,14 @@ public class ClientDTO {
         if (o == null || getClass() != o.getClass()) return false;
         ClientDTO clientDTO = (ClientDTO) o;
         return Objects.equals(id, clientDTO.id);
+    }
+
+    public Client dtoToModel() {
+        return new Client(id, name, address, email, phoneNumber, isProfessional);
+    }
+
+    public static ClientDTO modelToDTO(Client client) {
+        return new ClientDTO(client.getId(), client.getName(), client.getAddress(), client.getEmail(), client.getPhoneNumber(), client.isProfessional());
     }
 
 }

@@ -1,5 +1,6 @@
 package main.java.com.kostr.dto;
 
+import main.java.com.kostr.models.Project;
 import main.java.com.kostr.models.enums.ProjectStatus;
 import main.java.com.kostr.models.enums.ProjectType;
 
@@ -117,5 +118,13 @@ public class ProjectDTO {
         if (type != that.type) return false;
         if (status != that.status) return false;
         return clientId.equals(that.clientId);
+    }
+
+    public Project dtoToModel() {
+        return new Project(id, name, profitMargin, totalCost, surfaceArea, type, status, clientId);
+    }
+
+    public static ProjectDTO modelToDTO(Project project) {
+        return new ProjectDTO(project.getId(), project.getName(), project.getProfitMargin(), project.getTotalCost(), project.getSurfaceArea(), project.getType(), project.getStatus(), project.getClientId());
     }
 }

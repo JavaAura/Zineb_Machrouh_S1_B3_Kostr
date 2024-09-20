@@ -1,5 +1,6 @@
 package main.java.com.kostr.dto;
 
+import main.java.com.kostr.models.Material;
 import main.java.com.kostr.models.enums.ComponentType;
 
 import java.util.UUID;
@@ -72,5 +73,13 @@ public class MaterialDTO extends ComponentDTO{
                 Double.compare(that.getQuantity(), getQuantity()) == 0 &&
                 Double.compare(that.getTransportCost(), getTransportCost()) == 0 &&
                 Double.compare(that.getQualityCoefficient(), getQualityCoefficient()) == 0;
+    }
+
+    public Material dtoToModel() {
+        return new Material(getId(), getName(), getType(), getVatRate(), getTotalPrice(), getProjectId(), unitCost, quantity, transportCost, qualityCoefficient);
+    }
+
+    public static MaterialDTO modelToDTO(Material material) {
+        return new MaterialDTO(material.getId(), material.getName(), material.getType(), material.getVatRate(), material.getTotalPrice(), material.getProjectId(), material.getUnitCost(), material.getQuantity(), material.getTransportCost(), material.getQualityCoefficient());
     }
 }

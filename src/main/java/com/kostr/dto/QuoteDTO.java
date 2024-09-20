@@ -1,5 +1,7 @@
 package main.java.com.kostr.dto;
 
+import main.java.com.kostr.models.Quote;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -93,5 +95,13 @@ public class QuoteDTO {
         if (!projectId.equals(quoteDTO.projectId)) return false;
         if (!issueDate.equals(quoteDTO.issueDate)) return false;
         return validityDate.equals(quoteDTO.validityDate);
+    }
+
+    public Quote dtoToModel() {
+        return new Quote(id, projectId, estimatedCost, issueDate, validityDate, isAccepted);
+    }
+
+    public QuoteDTO modelToDTO(Quote quote) {
+        return new QuoteDTO(quote.getId(), quote.getProjectId(), quote.getEstimatedCost(), quote.getIssueDate(), quote.getValidityDate(), quote.isAccepted());
     }
 }

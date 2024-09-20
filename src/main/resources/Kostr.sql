@@ -36,28 +36,28 @@ CREATE TABLE Quotes (
 );
 
 CREATE TABLE ComponentTypes(
-                               id UUID primary key not null DEFAULT uuid_generate_v4(),
-                               name varchar(250),
-                               type componentType
+    id UUID primary key not null DEFAULT uuid_generate_v4(),
+    name varchar(250),
+    type componentType
 );
 CREATE TABLE Components (
-                            id UUID primary key not null DEFAULT uuid_generate_v4(),
-                            name varchar(250),
-                            type UUID references ComponentTypes(id),
-                            vatRate NUMERIC default null,
-                            totalPrice NUMERIC default null,
-                            projectId UUID references Projects(id)
+    id UUID primary key not null DEFAULT uuid_generate_v4(),
+    name varchar(250),
+    type UUID references ComponentTypes(id),
+    vatRate NUMERIC default null,
+    totalPrice NUMERIC default null,
+    projectId UUID references Projects(id)
 );
 
 CREATE TABLE Materials(
-                          unitCost NUMERIC default null,
-                          quantity NUMERIC default null,
-                          transportCost NUMERIC default null,
-                          qualityCoefficient  NUMERIC default 1.0
+    unitCost NUMERIC default null,
+    quantity NUMERIC default null,
+    transportCost NUMERIC default null,
+    qualityCoefficient  NUMERIC default 1.0
 ) inherits (Components);
 
 CREATE TABLE Workforce(
-                          hourlyRate NUMERIC default null,
-                          hoursWorked NUMERIC default null,
-                          workerProductivity NUMERIC default 1.0
+    hourlyRate NUMERIC default null,
+    hoursWorked NUMERIC default null,
+    workerProductivity NUMERIC default 1.0
 ) inherits (Components);

@@ -1,13 +1,16 @@
 package main.java.com.kostr.models;
 
-public class Workforce {
+import java.util.UUID;
+
+public class Workforce extends Component{
     private double hourlyRate;
     private double hoursWorked;
     private double workerProductivity;
 
     public Workforce(){}
 
-    public Workforce( double hourlyRate, double hoursWorked, double workerProductivity) {
+    public Workforce(UUID id, String name, UUID type, double vatRate, double totalPrice, UUID projectId, double hourlyRate, double hoursWorked, double workerProductivity) {
+        super(id, name, type, vatRate, totalPrice, projectId);
         this.hourlyRate = hourlyRate;
         this.hoursWorked = hoursWorked;
         this.workerProductivity = workerProductivity;

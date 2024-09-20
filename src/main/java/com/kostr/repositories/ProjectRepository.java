@@ -6,6 +6,7 @@ import main.java.com.kostr.repositories.interfaces.ProjectRepositoryInterface;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ProjectRepository implements ProjectRepositoryInterface {
@@ -56,28 +57,28 @@ public class ProjectRepository implements ProjectRepositoryInterface {
     }
 
     @Override
-    public void getProjectById(String id) throws SQLException {
+    public ResultSet getProjectById(String id) throws SQLException {
         String query = "SELECT * FROM Projects WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, id);
-            ps.executeQuery();
+            return ps.executeQuery();
         }
     }
 
     @Override
-    public void getClientProjects(String clientId) throws SQLException {
+    public ResultSet getClientProjects(String clientId) throws SQLException {
         String query = "SELECT * FROM Projects WHERE clientId = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, clientId);
-            ps.executeQuery();
+            return ps.executeQuery();
         }
     }
 
     @Override
-    public void getProjects() throws SQLException {
+    public ResultSet getProjects() throws SQLException {
         String query = "SELECT DISTINCT * FROM Projects";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.executeQuery();
+            return ps.executeQuery();
         }
     }
 

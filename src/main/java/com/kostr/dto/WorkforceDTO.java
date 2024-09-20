@@ -1,5 +1,6 @@
 package main.java.com.kostr.dto;
 
+import main.java.com.kostr.models.Workforce;
 import main.java.com.kostr.models.enums.ComponentType;
 
 import java.util.UUID;
@@ -61,5 +62,13 @@ public class WorkforceDTO extends ComponentDTO{
         return Double.compare(that.hourlyRate, hourlyRate) == 0 &&
                 Double.compare(that.hoursWorked, hoursWorked) == 0 &&
                 Double.compare(that.workerProductivity, workerProductivity) == 0;
+    }
+
+    public Workforce dtoToModel(){
+        return new Workforce(getId(), getName(), getType(), getVatRate(), getTotalPrice(), getProjectId(), hourlyRate, hoursWorked, workerProductivity);
+    }
+
+    public static WorkforceDTO modelToDTO(Workforce workforce){
+        return new WorkforceDTO(workforce.getId(), workforce.getName(), workforce.getType(), workforce.getVatRate(), workforce.getTotalPrice(), workforce.getProjectId(), workforce.getHourlyRate(), workforce.getHoursWorked(), workforce.getWorkerProductivity());
     }
 }
