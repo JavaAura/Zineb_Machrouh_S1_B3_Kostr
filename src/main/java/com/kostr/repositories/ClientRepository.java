@@ -1,12 +1,13 @@
 package main.java.com.kostr.repositories;
 
 import main.java.com.kostr.dto.ClientDTO;
+import main.java.com.kostr.models.Client;
 import main.java.com.kostr.repositories.interfaces.ClientRepositoryInterface;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class ClientRepository implements ClientRepositoryInterface {
     private final Connection connection;
@@ -16,17 +17,27 @@ public class ClientRepository implements ClientRepositoryInterface {
     }
 
     @Override
-    public void addClient(ClientDTO client) throws SQLException {
-        String query = "INSERT INTO Clients (name, address, email, phoneNumber, isProfessional) VALUES ( ?, ?, ?, ?)";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+    public Client addClient(Client client) throws SQLException {
+        String query = "INSERT INTO Clients (name, address, email, phoneNumber, isProfessional) VALUES (?, ?, ?, ?, ?)";
+
+        try (PreparedStatement ps = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, client.getName());
             ps.setString(2, client.getAddress());
             ps.setString(3, client.getEmail());
             ps.setString(4, client.getPhoneNumber());
             ps.setBoolean(5, client.isProfessional());
-            ps.executeUpdate();
+
+            int affectedRows = ps.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Failed to insert client, no rows affected.");
+            }
+
+            // Retrieve the generated UUID from the database
+            return getClientModel(client, ps);
         }
     }
+
 
     @Override
     public void removeClient(String id) throws SQLException {
@@ -38,7 +49,7 @@ public class ClientRepository implements ClientRepositoryInterface {
     }
 
     @Override
-    public void updateClient(ClientDTO client) throws SQLException {
+    public Client updateClient(Client client) throws SQLException {
         String query = "UPDATE Clients SET name = ?, address = ?, email = ?, phoneNumber = ?, isProfessional = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, client.getName());
@@ -47,16 +58,56 @@ public class ClientRepository implements ClientRepositoryInterface {
             ps.setString(4, client.getPhoneNumber());
             ps.setBoolean(5, client.isProfessional());
             ps.setString(6, client.getId().toString());
-            ps.executeUpdate();
+
+
+            int affectedRows = ps.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Failed to update client, no rows affected.");
+            }
+            return getClientModel(client, ps);
+        }
+    }
+
+    private Client getClientModel(Client client, PreparedStatement ps) throws SQLException {
+        try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+                UUID clientId = (UUID) generatedKeys.getObject(1);
+
+                return new Client(clientId, client.getName(), client.getAddress(), client.getEmail(), client.getPhoneNumber(), client.isProfessional());
+            } else {
+                return null;
+            }
         }
     }
 
     @Override
-    public ResultSet getClientById(String id) throws SQLException {
+    public Client getClientById(String id) throws SQLException {
         String query = "SELECT * FROM Clients WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, id);
-            return ps.executeQuery();
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Client(UUID.fromString(rs.getString("id")), rs.getString("name"), rs.getString("address"), rs.getString("email"), rs.getString("phoneNumber"), rs.getBoolean("isProfessional"));
+                } else {
+                    return null;
+                }
+            }
+        }
+    }
+
+    @Override
+    public ArrayList<Client> getAllClients() throws SQLException {
+        String query = "SELECT * FROM Clients";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                ArrayList<Client> clients = new ArrayList<>();
+                while (rs.next()) {
+                    clients.add(new Client(UUID.fromString(rs.getString("id")), rs.getString("name"), rs.getString("address"), rs.getString("email"), rs.getString("phoneNumber"), rs.getBoolean("isProfessional")));
+                }
+                return clients;
+            }
         }
     }
 }

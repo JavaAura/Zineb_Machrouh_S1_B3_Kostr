@@ -1,84 +1,109 @@
 package main.java.com.kostr.services;
 
 import main.java.com.kostr.dto.ProjectDTO;
+import main.java.com.kostr.models.Project;
 import main.java.com.kostr.models.enums.ProjectStatus;
-import main.java.com.kostr.repositories.MaterialRepository;
-import main.java.com.kostr.repositories.ProjectRepository;
+import main.java.com.kostr.repositories.interfaces.ProjectRepositoryInterface;
 import main.java.com.kostr.services.interfaces.ProjectServiceInterface;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class ProjectService implements ProjectServiceInterface {
-    private final Connection connection;
-    private final ProjectRepository projectRepository;
+    private final ProjectRepositoryInterface projectRepository;
+    private static final Logger logger = Logger.getLogger(ProjectService.class.getName());
 
-    private static final Logger logger = Logger.getLogger(MaterialService.class.getName());
-
-    public ProjectService(Connection connection, ProjectRepository projectRepository) {
-        this.connection = connection;
+    public ProjectService(ProjectRepositoryInterface projectRepository) {
         this.projectRepository = projectRepository;
     }
 
     @Override
-    public void addProject(ProjectDTO project) throws SQLException {
-        projectRepository.addProject(project);
+    public Project addProject(ProjectDTO project) throws SQLException {
+        Project projectModel = project.dtoToModel();
         logger.info("Project added successfully");
+        return projectRepository.addProject(projectModel);
     }
 
     @Override
     public void removeProject(String id) throws SQLException {
-        if (projectRepository.getProjectById(id).next()) {
-            projectRepository.removeProject(id);
-            logger.info("Project removed successfully");
-        } else {
-            logger.warning("Project not found");
-        }
-    }
-
-    @Override
-    public void updateProject(ProjectDTO project) throws SQLException {
-        if (projectRepository.getProjectById(project.getId().toString()).next()) {
-            projectRepository.updateProject(project);
-            logger.info("Project updated successfully");
-        } else {
-            logger.warning("Project not found");
-        }
-    }
-
-    @Override
-    public ResultSet getProjectById(String id) throws SQLException {
         if (id.isEmpty()) {
             logger.severe("ID field must be filled in");
         } else {
-            projectRepository.getProjectById(id);
+            if (projectRepository.getProjectById(id) == null) {
+                logger.severe("Project not found");
+            } else {
+                projectRepository.removeProject(id);
+                logger.info("Project removed successfully");
+            }
         }
     }
 
     @Override
-    public ResultSet getClientProjects(String clientId) throws SQLException {
-
+    public Project updateProject(ProjectDTO project) throws SQLException {
+        if (projectRepository.getProjectById(project.getId().toString()) == null) {
+            logger.severe("Project not found");
+            return null;
+        } else {
+            Project projectModel = project.dtoToModel();
+            logger.info("Project updated successfully");
+            return projectRepository.updateProject(projectModel);
+        }
     }
 
     @Override
-    public ResultSet getProjects() throws SQLException {
+    public Project getProjectById(String id) throws SQLException {
+        if (id.isEmpty()) {
+            logger.severe("ID field must be filled in");
+            return null;
+        } else {
+            return projectRepository.getProjectById(id);
+        }
+    }
 
+    @Override
+    public ArrayList<Project> getClientProjects(String clientId) throws SQLException {
+        if (clientId.isEmpty()) {
+            logger.severe("Client ID field must be filled in");
+            return null;
+        } else {
+            return projectRepository.getClientProjects(clientId);
+        }
+    }
+
+    @Override
+    public ArrayList<Project> getProjects() throws SQLException {
+        return projectRepository.getProjects();
     }
 
     @Override
     public Integer getClientProjectsCount(String clientId) throws SQLException {
-        return 0;
+        if (clientId.isEmpty()) {
+            logger.severe("Client ID field must be filled in");
+            return 0;
+        } else {
+            return projectRepository.getClientProjectsCount(clientId);
+        }
     }
 
     @Override
-    public void addClientProject(String clientId, String projectId) throws SQLException {
-
+    public Project addClientProject(String clientId, String projectId) throws SQLException {
+        if (clientId.isEmpty() || projectId.isEmpty()) {
+            logger.severe("Both Client ID and Project ID fields must be filled in");
+            return null;
+        } else {
+            return projectRepository.addClientProject(clientId, projectId);
+        }
     }
 
     @Override
-    public void updateStatus(String projectId, ProjectStatus status) {
-
+    public Project updateStatus(String projectId, ProjectStatus status) throws SQLException {
+        if (projectRepository.getProjectById(projectId) == null) {
+            logger.severe("Project not found");
+            return null;
+        } else {
+            logger.info("Project status updated successfully");
+            return projectRepository.updateStatus(projectId, status);
+        }
     }
 }

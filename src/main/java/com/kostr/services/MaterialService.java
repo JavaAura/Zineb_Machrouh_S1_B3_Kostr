@@ -1,52 +1,60 @@
 package main.java.com.kostr.services;
 
 import main.java.com.kostr.dto.MaterialDTO;
+import main.java.com.kostr.models.Material;
 import main.java.com.kostr.repositories.MaterialRepository;
+import main.java.com.kostr.repositories.interfaces.MaterialRepositoryInterface;
 import main.java.com.kostr.services.interfaces.MaterialServiceInterface;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class MaterialService implements MaterialServiceInterface {
-    private final Connection connection;
-    private MaterialRepository materialRepository;
-
+    private MaterialRepositoryInterface materialRepository;
     private static final Logger logger = Logger.getLogger(MaterialService.class.getName());
 
-    public MaterialService(Connection connection) {
-        this.connection = connection;
+    public MaterialService(MaterialRepositoryInterface materialRepository) {
+        this.materialRepository = materialRepository;
     }
 
     @Override
-    public void addMaterial(MaterialDTO material) throws SQLException {
-        materialRepository.addMaterial(material);
+    public Material addMaterial(MaterialDTO material) throws SQLException {
+        Material materialModel = material.dtoToModel();
         logger.info("Material added successfully");
+        return materialRepository.addMaterial(materialModel);
     }
 
     @Override
     public void removeMaterial(String id) throws SQLException {
-        if (materialRepository.getMaterialById(id).next()) {
-            materialRepository.removeMaterial(id);
-            logger.info("Material removed successfully");
+        if (id.isEmpty()) {
+            logger.severe("ID field must be filled in");
         } else {
-            logger.warning("Material not found");
+            if (materialRepository.getMaterialById(id) == null) {
+                logger.severe("Material not found");
+            } else {
+                materialRepository.removeMaterial(id);
+                logger.info("Material removed successfully");
+            }
         }
     }
 
     @Override
-    public void updateMaterial(MaterialDTO material) throws SQLException {
-        if (materialRepository.getMaterialById(material.getId().toString()).next()) {
-            materialRepository.updateMaterial(material);
+    public Material updateMaterial(MaterialDTO material) throws SQLException {
+        if (materialRepository.getMaterialById(material.getId().toString()) == null) {
+            logger.severe("Material not found");
+            return null;
+        } else {
+            Material materialModel = material.dtoToModel();
             logger.info("Material updated successfully");
-        } else {
-            logger.warning("Material not found");
+            return materialRepository.updateMaterial(materialModel);
         }
     }
 
     @Override
-    public ResultSet getMaterialById(String id) throws SQLException {
+    public Material getMaterialById(String id) throws SQLException {
         if (id.isEmpty()) {
             logger.severe("ID field must be filled in");
             return null;
@@ -56,7 +64,7 @@ public class MaterialService implements MaterialServiceInterface {
     }
 
     @Override
-    public ResultSet getMaterialsByProject(String projectId) throws SQLException {
+    public ArrayList<Material> getMaterialsByProject(String projectId) throws SQLException {
         if (projectId.isEmpty()) {
             logger.severe("Project ID field must be filled in");
             return null;

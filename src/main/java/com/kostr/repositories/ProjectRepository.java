@@ -1,13 +1,17 @@
 package main.java.com.kostr.repositories;
 
 import main.java.com.kostr.dto.ProjectDTO;
+import main.java.com.kostr.models.Project;
 import main.java.com.kostr.models.enums.ProjectStatus;
+import main.java.com.kostr.models.enums.ProjectType;
 import main.java.com.kostr.repositories.interfaces.ProjectRepositoryInterface;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class ProjectRepository implements ProjectRepositoryInterface {
     private final Connection connection;
@@ -16,8 +20,20 @@ public class ProjectRepository implements ProjectRepositoryInterface {
         this.connection = connection;
     }
 
+    private Project getProjectModel(Project project, PreparedStatement ps) throws SQLException {
+        try(ResultSet generatedKeys = ps.getGeneratedKeys()){
+            if(generatedKeys.next()){
+                UUID id = (UUID) generatedKeys.getObject(1);
+
+                return new Project(id, project.getName(), project.getProfitMargin(), project.getTotalCost(), project.getSurfaceArea(), project.getType(), project.getStatus(), project.getClientId());
+            }else {
+                return null;
+            }
+        }
+    }
+
     @Override
-    public void addProject(ProjectDTO project) throws SQLException {
+    public Project addProject(Project project) throws SQLException {
         String query = "INSERT INTO Projects (name, profitMargin, totalCost, surfaceArea, type, status, clientId) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, project.getName());
@@ -27,7 +43,12 @@ public class ProjectRepository implements ProjectRepositoryInterface {
             ps.setObject(5, project.getType());
             ps.setObject(5, project.getStatus());
             ps.setString(6, project.getClientId().toString());
-            ps.executeUpdate();
+
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Failed to insert project, no rows affected.");
+            }
+            return getProjectModel(project, ps);
         }
     }
 
@@ -41,7 +62,7 @@ public class ProjectRepository implements ProjectRepositoryInterface {
     }
 
     @Override
-    public void updateProject(ProjectDTO project) throws SQLException {
+    public Project updateProject(Project project) throws SQLException {
         String query = "UPDATE Projects SET name = ?, profitMargin = ?, totalCost = ?, surfaceArea = ?, type = ?, status = ?, clientId = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, project.getName());
@@ -52,33 +73,59 @@ public class ProjectRepository implements ProjectRepositoryInterface {
             ps.setObject(6, project.getStatus());
             ps.setString(7, project.getClientId().toString());
             ps.setString(8, project.getId().toString());
-            ps.executeUpdate();
+
+            int affectedRows = ps.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Failed to update project, no rows affected.");
+            }
+            return getProjectModel(project, ps);
         }
     }
 
     @Override
-    public ResultSet getProjectById(String id) throws SQLException {
+    public Project getProjectById(String id) throws SQLException {
         String query = "SELECT * FROM Projects WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, id);
-            return ps.executeQuery();
+
+            try(ResultSet rs = ps.executeQuery()){
+                if(rs.next()){
+                    return new Project(UUID.fromString(rs.getString("id")), rs.getString("name"), rs.getDouble("profitMargin"), rs.getDouble("totalCost"), rs.getDouble("surfaceArea"), ProjectType.valueOf(rs.getString("type")), ProjectStatus.valueOf(rs.getString("status")), UUID.fromString(rs.getString("clientId")));
+                }else{
+                    return null;
+                }
+            }
         }
     }
 
     @Override
-    public ResultSet getClientProjects(String clientId) throws SQLException {
+    public ArrayList<Project> getClientProjects(String clientId) throws SQLException {
         String query = "SELECT * FROM Projects WHERE clientId = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, clientId);
-            return ps.executeQuery();
+
+            try(ResultSet rs = ps.executeQuery()){
+                ArrayList<Project> projects = new ArrayList<>();
+                while(rs.next()){
+                    projects.add(new Project(UUID.fromString(rs.getString("id")), rs.getString("name"), rs.getDouble("profitMargin"), rs.getDouble("totalCost"), rs.getDouble("surfaceArea"),ProjectType.valueOf(rs.getString("type")), ProjectStatus.valueOf(rs.getString("status")), UUID.fromString(rs.getString("clientId"))));
+                }
+                return projects;
+            }
         }
     }
 
     @Override
-    public ResultSet getProjects() throws SQLException {
+    public ArrayList<Project> getProjects() throws SQLException {
         String query = "SELECT DISTINCT * FROM Projects";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
-            return ps.executeQuery();
+            try(ResultSet rs = ps.executeQuery()){
+                ArrayList<Project> projects = new ArrayList<>();
+                while(rs.next()){
+                    projects.add(new Project(UUID.fromString(rs.getString("id")), rs.getString("name"), rs.getDouble("profitMargin"), rs.getDouble("totalCost"), rs.getDouble("surfaceArea"),ProjectType.valueOf(rs.getString("type")), ProjectStatus.valueOf(rs.getString("status")), UUID.fromString(rs.getString("clientId"))));
+                }
+                return projects;
+            }
         }
     }
 
@@ -92,24 +139,34 @@ public class ProjectRepository implements ProjectRepositoryInterface {
     }
 
     @Override
-    public void addClientProject(String clientId, String projectId) throws SQLException {
+    public Project addClientProject(String clientId, String projectId) throws SQLException {
         String query = "UPDATE Projects SET clientId = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, clientId);
             ps.setString(2, projectId);
-            ps.executeUpdate();
+
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Failed to add client to project, no rows affected.");
+            }
+
+            return getProjectById(projectId);
         }
     }
 
     @Override
-    public void updateStatus(String projectId, ProjectStatus status) {
+    public Project updateStatus(String projectId, ProjectStatus status) throws SQLException{
         String query = "UPDATE Projects SET status = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setObject(1, status);
             ps.setString(2, projectId);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Failed to update project status, no rows affected.");
+            }
+
+            return getProjectById(projectId);
         }
     }
 
