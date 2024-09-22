@@ -34,15 +34,12 @@ public class ProjectRepository implements ProjectRepositoryInterface {
 
     @Override
     public Project addProject(Project project) throws SQLException {
-        String query = "INSERT INTO Projects (name, profitMargin, totalCost, surfaceArea, type, status, clientId) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Projects (name, profitMargin, surfaceArea, type) VALUES (?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, project.getName());
             ps.setDouble(2, project.getProfitMargin());
-            ps.setDouble(3, project.getTotalCost());
-            ps.setDouble(4, project.getSurfaceArea());
-            ps.setObject(5, project.getType());
-            ps.setObject(5, project.getStatus());
-            ps.setString(6, project.getClientId().toString());
+            ps.setDouble(3, project.getSurfaceArea());
+            ps.setObject(4, project.getType(), java.sql.Types.OTHER);
 
             int affectedRows = ps.executeUpdate();
             if (affectedRows == 0) {
@@ -54,9 +51,10 @@ public class ProjectRepository implements ProjectRepositoryInterface {
 
     @Override
     public void removeProject(String id) throws SQLException {
-        String query = "DELETE FROM Projects WHERE id = ?";
+        String query = "UPDATE Projects SET status = ? WHERE id = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(1, id);
+            ps.setObject(1, ProjectStatus.CANCELLED);
+            ps.setString(2, id);
             ps.executeUpdate();
         }
     }

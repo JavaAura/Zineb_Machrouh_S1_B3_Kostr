@@ -21,32 +21,20 @@ public class ProjectService implements ProjectServiceInterface {
     @Override
     public Project addProject(ProjectDTO project) throws SQLException {
         Project projectModel = project.dtoToModel();
-        logger.info("Project added successfully");
         return projectRepository.addProject(projectModel);
     }
 
     @Override
     public void removeProject(String id) throws SQLException {
-        if (id.isEmpty()) {
-            logger.severe("ID field must be filled in");
-        } else {
-            if (projectRepository.getProjectById(id) == null) {
-                logger.severe("Project not found");
-            } else {
-                projectRepository.removeProject(id);
-                logger.info("Project removed successfully");
-            }
-        }
+        projectRepository.removeProject(id);
     }
 
     @Override
     public Project updateProject(ProjectDTO project) throws SQLException {
         if (projectRepository.getProjectById(project.getId().toString()) == null) {
-            logger.severe("Project not found");
             return null;
         } else {
             Project projectModel = project.dtoToModel();
-            logger.info("Project updated successfully");
             return projectRepository.updateProject(projectModel);
         }
     }
@@ -54,7 +42,6 @@ public class ProjectService implements ProjectServiceInterface {
     @Override
     public Project getProjectById(String id) throws SQLException {
         if (id.isEmpty()) {
-            logger.severe("ID field must be filled in");
             return null;
         } else {
             return projectRepository.getProjectById(id);
@@ -64,7 +51,6 @@ public class ProjectService implements ProjectServiceInterface {
     @Override
     public ArrayList<Project> getClientProjects(String clientId) throws SQLException {
         if (clientId.isEmpty()) {
-            logger.severe("Client ID field must be filled in");
             return null;
         } else {
             return projectRepository.getClientProjects(clientId);
@@ -79,7 +65,6 @@ public class ProjectService implements ProjectServiceInterface {
     @Override
     public Integer getClientProjectsCount(String clientId) throws SQLException {
         if (clientId.isEmpty()) {
-            logger.severe("Client ID field must be filled in");
             return 0;
         } else {
             return projectRepository.getClientProjectsCount(clientId);
@@ -89,7 +74,6 @@ public class ProjectService implements ProjectServiceInterface {
     @Override
     public Project addClientProject(String clientId, String projectId) throws SQLException {
         if (clientId.isEmpty() || projectId.isEmpty()) {
-            logger.severe("Both Client ID and Project ID fields must be filled in");
             return null;
         } else {
             return projectRepository.addClientProject(clientId, projectId);
@@ -99,10 +83,8 @@ public class ProjectService implements ProjectServiceInterface {
     @Override
     public Project updateStatus(String projectId, ProjectStatus status) throws SQLException {
         if (projectRepository.getProjectById(projectId) == null) {
-            logger.severe("Project not found");
             return null;
         } else {
-            logger.info("Project status updated successfully");
             return projectRepository.updateStatus(projectId, status);
         }
     }
