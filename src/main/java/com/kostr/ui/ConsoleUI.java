@@ -70,7 +70,7 @@ public class ConsoleUI {
                 componentsMenu(option);
 
             }else if (option == 9) {
-                System.out.println(YELLOW + "+ Exiting Kostr +"+ RESET);
+                System.out.println(YELLOW + "+ See You Soon +"+ RESET);
                 exit = true;
             }
             else {
