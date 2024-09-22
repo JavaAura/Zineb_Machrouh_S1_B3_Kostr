@@ -29,11 +29,12 @@ public class ProjectDTO {
         this.clientId = clientId;
     }
 
-    public ProjectDTO(String projectName, double projectProfitMargin, double projectSurfaceArea, String projectType) {
+    public ProjectDTO(String projectName, double projectProfitMargin, double projectSurfaceArea, String projectType, UUID clientId) {
         this.name = projectName;
         this.profitMargin = projectProfitMargin;
         this.surfaceArea = projectSurfaceArea;
         this.type = ProjectType.valueOf(projectType);
+        this.clientId = clientId;
     }
 
     public UUID getId() {

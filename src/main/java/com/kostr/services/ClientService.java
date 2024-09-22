@@ -69,4 +69,14 @@ public class ClientService implements ClientServiceInterface {
     public ArrayList<Client> getAllClients() throws SQLException {
         return clientRepository.getAllClients();
     }
+
+    @Override
+    public Client getClientByEMail(String email) throws SQLException {
+        if (email.isEmpty()) {
+            logger.severe("Email field must be filled in");
+            return null;
+        }else{
+            return clientRepository.getClientByEMail(email);
+        }
+    }
 }

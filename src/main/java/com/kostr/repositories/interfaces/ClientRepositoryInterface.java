@@ -12,4 +12,5 @@ public interface ClientRepositoryInterface {
     public Client updateClient(Client client) throws SQLException;
     public Client getClientById(String id) throws SQLException;
     public ArrayList<Client> getAllClients() throws SQLException;
+    public Client getClientByEMail(String email) throws SQLException;
 }

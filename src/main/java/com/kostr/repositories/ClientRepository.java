@@ -110,4 +110,20 @@ public class ClientRepository implements ClientRepositoryInterface {
             }
         }
     }
+
+    @Override
+    public Client getClientByEMail(String email) throws SQLException {
+        String query = "SELECT * FROM Clients WHERE email = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, email);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Client(UUID.fromString(rs.getString("id")), rs.getString("name"), rs.getString("address"), rs.getString("email"), rs.getString("phoneNumber"), rs.getBoolean("isProfessional"));
+                } else {
+                    return null;
+                }
+            }
+        }
+    }
 }
