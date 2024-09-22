@@ -23,12 +23,12 @@ CREATE TABLE Projects (
     surfaceArea NUMERIC default null,
     type projectType default null,
     status projectStatus default 'IN_PROGRESS',
-    clientId UUID references Clients(id)
+    clientId UUID references Clients(id) default null
 );
 
 CREATE TABLE Quotes (
     id UUID primary key not null DEFAULT uuid_generate_v4(),
-    projectId UUID references Projects(id),
+    projectId UUID references Projects(id) default null,
     estimatedCost NUMERIC default 0.0,
     issueDate DATE default current_date,
     validityDate DATE default null,
@@ -43,10 +43,10 @@ CREATE TABLE ComponentTypes(
 CREATE TABLE Components (
     id UUID primary key not null DEFAULT uuid_generate_v4(),
     name varchar(250),
-    type UUID references ComponentTypes(id),
+    type UUID references ComponentTypes(id) default null,
     vatRate NUMERIC default null,
     totalPrice NUMERIC default null,
-    projectId UUID references Projects(id)
+    projectId UUID references Projects(id) default null
 );
 
 CREATE TABLE Materials(

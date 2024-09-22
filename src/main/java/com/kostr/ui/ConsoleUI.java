@@ -1,7 +1,13 @@
 package main.java.com.kostr.ui;
 
 import main.java.com.kostr.config.Session;
+import main.java.com.kostr.controllers.ProjectController;
+import main.java.com.kostr.dto.ProjectDTO;
+import main.java.com.kostr.repositories.ProjectRepository;
+import main.java.com.kostr.repositories.interfaces.ProjectRepositoryInterface;
 import main.java.com.kostr.services.MaterialService;
+import main.java.com.kostr.services.ProjectService;
+import main.java.com.kostr.utils.InputValidator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -11,6 +17,7 @@ public class ConsoleUI {
     private final Connection connection;
     private static Session session = Session.getInstance();
     private static final Logger logger = Logger.getLogger(ConsoleUI.class.getName());
+    private final InputValidator inputValidator = new InputValidator();
 
     public static final String RESET = "\033[0m";
     public static final String RED = "\033[0;31m";
@@ -27,44 +34,143 @@ public class ConsoleUI {
     }
 
     public void menu(){
-        System.out.println(BLUE + "+----------+" + RESET + " Welcome To Kostr " + BLUE + "+----------+" + RESET);
-        System.out.println(BLUE+ "+ Projects :                             +");
-        System.out.println(BLUE + "+ 1. " + RESET + "View All Projects" + BLUE + "                   +");
-        System.out.println(BLUE + "+ 2. " + RESET + "Search Projects" + BLUE + "                     +");
-        System.out.println(BLUE + "+ 3. " + RESET + "Manage Projects" + BLUE + "                     +");
-        System.out.println(BLUE + "+ 4. " + RESET + "Accept/Decline Quote" + BLUE + "                +");
-        System.out.println(BLUE + "+ Clients :                              +");
-        System.out.println(BLUE + "+ 5. " + RESET + "View All Clients" + BLUE + "                    +");
-        System.out.println(BLUE + "+ 6. " + RESET + "Get Client Projects" + BLUE + "                 +");
-        System.out.println(BLUE + "+ 7. " + RESET + "Manage Clients" + BLUE + "                      +");
-        System.out.println(BLUE + "+ Components :                           +");
-        System.out.println(BLUE + "+ 8. " + RESET + "Manage Components Types" + BLUE + "             +");
-        System.out.println(BLUE + "++++++++++++++++++++++++++++++++++++++++++" + RESET);
+        boolean exit = false;
 
-        System.out.println("Please select an option: ");
-        int option = session.getScanner().nextInt();
+        while(!exit){
+            System.out.println(BLUE + "+----------+" + RESET + " Welcome To Kostr " + BLUE + "+----------+" + RESET);
+            System.out.println(BLUE+ "+ Projects :                             +");
+            System.out.println(BLUE + "+ 1. " + RESET + "View All Projects" + BLUE + "                   +");
+            System.out.println(BLUE + "+ 2. " + RESET + "Search Projects" + BLUE + "                     +");
+            System.out.println(BLUE + "+ 3. " + RESET + "Manage Projects" + BLUE + "                     +");
+            System.out.println(BLUE + "+ 4. " + RESET + "Accept/Decline Quote" + BLUE + "                +");
+            System.out.println(BLUE + "+ Clients :                              +");
+            System.out.println(BLUE + "+ 5. " + RESET + "View All Clients" + BLUE + "                    +");
+            System.out.println(BLUE + "+ 6. " + RESET + "Get Client Projects" + BLUE + "                 +");
+            System.out.println(BLUE + "+ 7. " + RESET + "Manage Clients" + BLUE + "                      +");
+            System.out.println(BLUE + "+ Components :                           +");
+            System.out.println(BLUE + "+ 8. " + RESET + "Manage Components Types" + BLUE + "             +");
+            System.out.println(YELLOW + "+ 9. " + RESET + "EXIT" + YELLOW + "                                +");
+            System.out.println(BLUE + "++++++++++++++++++++++++++++++++++++++++++" + RESET);
 
-        switch (option) {
+            System.out.println("Please select an option: ");
+            int option = session.getScanner().nextInt();
+
+            if (option == 1 || option == 2 || option == 3 || option == 4) {
+                projectsMenu(option);
+
+            }else if (option == 5 || option == 6 || option == 7) {
+                clientsMenu(option);
+
+            }else if (option == 8) {
+                componentsMenu(option);
+
+            }else if (option == 9) {
+                System.out.println(YELLOW + "+ Exiting Kostr +"+ RESET);
+                exit = true;
+            }
+            else {
+                System.out.println(RED + "Invalid option" + RESET);
+                menu();
+            }
+        }
+    }
+
+
+    public void projectsMenu(Integer option){
+        ProjectRepository projectRepository = new ProjectRepository(connection);
+        ProjectService projectService = new ProjectService(projectRepository);
+        ProjectController projectController = new ProjectController(projectService);
+
+        switch (option){
             case 1:
+
                 break;
             case 2:
+
                 break;
             case 3:
+                System.out.println(YELLOW + "+ Manage Projects Selected +"+ RESET);
+
+                System.out.println(BLUE + "+ 1. " + RESET + "Add Project");
+                System.out.println(BLUE + "+ 2. " + RESET + "Update Project");
+                System.out.println(BLUE + "+ 3. " + RESET + "Delete Project");
+
+                System.out.println(BLUE + "+ " + RESET + "Please select an option: ");
+                int projectOption = session.getScanner().nextInt();
+
+                switch (projectOption){
+                    case 1:
+                        System.out.println(CYAN + "+ Add Project Selected +"+ RESET);
+
+                        String projectName;
+                        System.out.println(BLUE + "+ " + RESET + "Enter Project Name: ");
+                        do {
+                            projectName = session.getScanner().nextLine();
+                            if (!inputValidator.handleString(projectName)) {
+                                System.out.println(RED + "Invalid input! Please enter a valid project name (only alphabetic characters)." + RESET);
+                            }
+                        } while (!inputValidator.handleString(projectName));
+
+                        double projectProfitMargin;
+                        String profitMarginInput;
+                        System.out.println(BLUE + "+ " + RESET + "Enter Project Profit Margin: ");
+                        do {
+                            profitMarginInput = session.getScanner().nextLine();
+                            if (!inputValidator.handleDouble(profitMarginInput)) {
+                                System.out.println(RED + "Invalid input! Please enter a valid profit margin (must be greater than 0)." + RESET);
+                            }
+                        } while (!inputValidator.handleDouble(profitMarginInput) || (projectProfitMargin = Double.parseDouble(profitMarginInput)) <= 0);
+
+                        double projectSurfaceArea;
+                        String surfaceAreaInput;
+                        System.out.println(BLUE + "+ " + RESET + "Enter Project Surface Area: ");
+                        do {
+                            surfaceAreaInput = session.getScanner().nextLine();
+                            if (!inputValidator.handleDouble(surfaceAreaInput)) {
+                                System.out.println(RED + "Invalid input! Please enter a valid surface area (must be greater than 0)." + RESET);
+                            }
+                        } while (!inputValidator.handleDouble(surfaceAreaInput) || (projectSurfaceArea = Double.parseDouble(surfaceAreaInput)) <= 0);
+
+                        String projectType;
+                        System.out.println(BLUE + "+ " + RESET + "Enter Project Type (Renovation / Construction): ");
+                        do {
+                            projectType = session.getScanner().nextLine();
+                            if (!projectType.equalsIgnoreCase("Renovation") && !projectType.equalsIgnoreCase("Construction")) {
+                                System.out.println(RED + "Invalid input! Please enter either 'Renovation' or 'Construction'." + RESET);
+                            }
+                        } while (!projectType.equalsIgnoreCase("Renovation") && !projectType.equalsIgnoreCase("Construction"));
+
+                        ProjectDTO projectDTO = new ProjectDTO(projectName, projectProfitMargin, projectSurfaceArea, projectType.toUpperCase());
+
+                        try {
+                            projectController.createProject(projectDTO);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case 2:
+
+                        break;
+                    case 3:
+
+                        break;
+                    default:
+                        System.out.println(RED + "Invalid option" + RESET);
+                        projectsMenu(3);
+                        break;
+                }
                 break;
             case 4:
+
                 break;
-            case 5:
-                break;
-            case 6:
-                break;
-            case 7:
-                break;
-            case 8:
-                break;
-            default:
-                System.out.println(RED+ "Invalid option. Please try again."+ RESET);
-                menu();
         }
+    }
+
+    public void clientsMenu(Integer option){
+
+    }
+
+    public void componentsMenu(Integer option){
 
     }
 }

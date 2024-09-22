@@ -29,6 +29,13 @@ public class ProjectDTO {
         this.clientId = clientId;
     }
 
+    public ProjectDTO(String projectName, double projectProfitMargin, double projectSurfaceArea, String projectType) {
+        this.name = projectName;
+        this.profitMargin = projectProfitMargin;
+        this.surfaceArea = projectSurfaceArea;
+        this.type = ProjectType.valueOf(projectType);
+    }
+
     public UUID getId() {
         return id;
     }
@@ -125,6 +132,14 @@ public class ProjectDTO {
     }
 
     public static ProjectDTO modelToDTO(Project project) {
-        return new ProjectDTO(project.getId(), project.getName(), project.getProfitMargin(), project.getTotalCost(), project.getSurfaceArea(), project.getType(), project.getStatus(), project.getClientId());
+        return new ProjectDTO(
+                project.getId(),
+                project.getName(),
+                project.getProfitMargin(),
+                project.getTotalCost(),
+                project.getSurfaceArea(),
+                project.getType(),
+                project.getStatus(),
+                project.getClientId());
     }
 }
