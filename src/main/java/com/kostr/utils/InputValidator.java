@@ -5,7 +5,7 @@ import java.util.Optional;
 public class InputValidator {
         // Handle names (only alphabetic characters)
         public boolean handleString(String name) {
-            return name != null && name.matches("[a-zA-Z]+");
+            return name != null && name.matches("[a-zA-Z\\s]+");
         }
 
         // Handle addresses (a number followed by one or more words)

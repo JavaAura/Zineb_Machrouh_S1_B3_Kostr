@@ -46,7 +46,7 @@ public class ConsoleUI {
             System.out.println(BLUE+ "+ Projects :                             +");
             System.out.println(BLUE + "+ 1. " + RESET + "View All Projects" + BLUE + "                   +");
             System.out.println(BLUE + "+ 2. " + RESET + "Search Projects" + BLUE + "                     +");
-            System.out.println(BLUE + "+ 3. " + RESET + "Manage Projects" + BLUE + "                     +");
+            System.out.println(BLUE + "+ 3. " + RESET + "Add New Project" + BLUE + "                     +");
             System.out.println(BLUE + "+ 4. " + RESET + "Accept/Decline Quote" + BLUE + "                +");
             System.out.println(BLUE + "+ Clients :                              +");
             System.out.println(BLUE + "+ 5. " + RESET + "View All Clients" + BLUE + "                    +");
@@ -98,43 +98,20 @@ public class ConsoleUI {
 
                 break;
             case 3:
-                System.out.println(YELLOW + "+ Manage Projects Selected +"+ RESET);
+                try {
+                    System.out.println(YELLOW + "+ Associate Client +" + RESET);
+                    boolean clientAssociated = associateClient(clientController);
 
-                System.out.println(BLUE + "+ 1. " + RESET + "Add Project");
-                System.out.println(BLUE + "+ 2. " + RESET + "Update Project");
-                System.out.println(BLUE + "+ 3. " + RESET + "Delete Project");
-
-                System.out.println(BLUE + "+ " + RESET + "Please select an option: ");
-                int projectOption = session.getScanner().nextInt();
-
-                switch (projectOption){
-                    case 1:
-                        try {
-                            System.out.println(YELLOW + "+ Associate Client +" + RESET);
-                            boolean clientAssociated = associateClient(clientController);
-
-                            if (clientAssociated) {
-                                System.out.println(YELLOW + "+ Create Project +" + RESET);
-                                projectController.createProject(addProject());
-                            } else {
-                                System.out.println(RED + "Client association failed. Cannot create project." + RESET);
-                            }
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    case 2:
-
-                        break;
-                    case 3:
-
-                        break;
-                    default:
-                        System.out.println(RED + "Invalid option" + RESET);
-                        projectsMenu(3);
-                        break;
+                    if (clientAssociated) {
+                        System.out.println(YELLOW + "+ Create Project +" + RESET);
+                        projectController.createProject(addProject());
+                    } else {
+                        System.out.println(RED + "Client association failed. Cannot create project." + RESET);
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
-                break;
+
             case 4:
 
                 break;
