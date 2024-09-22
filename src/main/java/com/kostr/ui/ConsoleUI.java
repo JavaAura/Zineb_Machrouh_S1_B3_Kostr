@@ -109,62 +109,16 @@ public class ConsoleUI {
 
                 switch (projectOption){
                     case 1:
-                        System.out.println(YELLOW + "+ Associate Client +"+ RESET);
-
-
-                        System.out.println(BLUE + "+ 1. " + RESET + "Search Clients");
-                        System.out.println(BLUE + "+ 2. " + RESET + "Add Client");
-                        int clientOption = session.getScanner().nextInt();
-
-                        switch (clientOption){
-                            case 1:
-                                System.out.println(BLUE + "+ " + RESET + "Enter Client Email: ");
-                                String clientEmail = session.getScanner().nextLine();
-
-                                ClientDTO client = clientController.getClientByEmail(clientEmail);
-                                if (client != null) {
-                                    session.setId(client.getId());
-                                } else {
-                                    projectsMenu(3);
-                                }
-
-                                break;
-                            case 2:
-                                System.out.println(BLUE + "+ " + RESET + "Enter Client Name: ");
-                                String clientName = session.getScanner().nextLine();
-
-                                System.out.println(BLUE + "+ " + RESET + "Enter Client Address: ");
-                                String clientAddress = session.getScanner().nextLine();
-
-                                System.out.println(BLUE + "+ " + RESET + "Enter Client Email: ");
-                                String clientEmail1 = session.getScanner().nextLine();
-
-                                System.out.println(BLUE + "+ " + RESET + "Enter Client Phone Number: ");
-                                String clientPhoneNumber = session.getScanner().nextLine();
-
-                                System.out.println(BLUE + "+ " + RESET + "Is Client Professional? (yes/no): ");
-                                String clientIsProfessional = session.getScanner().nextLine();
-
-                                ClientDTO newClient = null;
-                                if (clientIsProfessional.equalsIgnoreCase("yes")) {
-                                    newClient = new ClientDTO(null,clientName, clientAddress, clientEmail1, clientPhoneNumber, true);
-                                } else if (clientIsProfessional.equalsIgnoreCase("no")) {
-                                    newClient = new ClientDTO(null,clientName, clientAddress, clientEmail1, clientPhoneNumber, false);
-                                }
-
-                                ClientDTO clientDTO = clientController.createClient(newClient);
-                                session.setId(clientDTO.getId());
-
-                                break;
-                            default:
-                                System.out.println(RED + "Invalid option" + RESET);
-                                projectsMenu(3);
-                                break;
-                        }
-
-
                         try {
-                            projectController.createProject(addProject());
+                            System.out.println(YELLOW + "+ Associate Client +" + RESET);
+                            boolean clientAssociated = associateClient(clientController);
+
+                            if (clientAssociated) {
+                                System.out.println(YELLOW + "+ Create Project +" + RESET);
+                                projectController.createProject(addProject());
+                            } else {
+                                System.out.println(RED + "Client association failed. Cannot create project." + RESET);
+                            }
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -238,5 +192,103 @@ public class ConsoleUI {
 
         return projectDTO;
     }
+
+    private boolean associateClient(ClientController clientController) throws SQLException {
+        InputValidator inputValidator = new InputValidator();
+
+        System.out.println(BLUE + "+ 1. " + RESET + "Search Clients");
+        System.out.println(BLUE + "+ 2. " + RESET + "Add Client");
+        int clientOption = session.getScanner().nextInt();
+
+        switch (clientOption) {
+            case 1:
+                String clientEmail;
+                do {
+                    System.out.println(BLUE + "+ " + RESET + "Enter Client Email: ");
+                    clientEmail = session.getScanner().nextLine();
+                    if (!inputValidator.handleEmail(clientEmail)) {
+                        System.out.println(RED + "Invalid email format. Please try again." + RESET);
+                    }
+                } while (!inputValidator.handleEmail(clientEmail));
+
+                ClientDTO client = clientController.getClientByEmail(clientEmail);
+                if (client != null) {
+                    session.setId(client.getId());
+                } else {
+                    projectsMenu(3);
+                }
+                return client != null;
+
+            case 2:
+                String clientName;
+                do {
+                    System.out.println(BLUE + "+ " + RESET + "Enter Client Name: ");
+                    clientName = session.getScanner().nextLine();
+                    if (!inputValidator.handleString(clientName)) {
+                        System.out.println(RED + "Invalid name format. Please try again." + RESET);
+                    }
+                } while (!inputValidator.handleString(clientName));
+
+                String clientAddress;
+                do {
+                    System.out.println(BLUE + "+ " + RESET + "Enter Client Address: ");
+                    clientAddress = session.getScanner().nextLine();
+                    if (!inputValidator.handleAddress(clientAddress)) {
+                        System.out.println(RED + "Invalid address format. Please try again." + RESET);
+                    }
+                } while (!inputValidator.handleAddress(clientAddress));
+
+                String clientEmail1;
+                do {
+                    System.out.println(BLUE + "+ " + RESET + "Enter Client Email: ");
+                    clientEmail1 = session.getScanner().nextLine();
+                    if (!inputValidator.handleEmail(clientEmail1)) {
+                        System.out.println(RED + "Invalid email format. Please try again." + RESET);
+                    }
+                } while (!inputValidator.handleEmail(clientEmail1));
+
+                String clientPhoneNumber;
+                do {
+                    System.out.println(BLUE + "+ " + RESET + "Enter Client Phone Number: ");
+                    clientPhoneNumber = session.getScanner().nextLine();
+                    if (!inputValidator.handlePhone(clientPhoneNumber)) {
+                        System.out.println(RED + "Invalid phone number format. Please try again." + RESET);
+                    }
+                } while (!inputValidator.handlePhone(clientPhoneNumber));
+
+                String clientIsProfessional;
+                do {
+                    System.out.println(BLUE + "+ " + RESET + "Is Client Professional? (yes/no): ");
+                    clientIsProfessional = session.getScanner().nextLine();
+                    if (!clientIsProfessional.equalsIgnoreCase("yes") && !clientIsProfessional.equalsIgnoreCase("no")) {
+                        System.out.println(RED + "Please answer with 'yes' or 'no'." + RESET);
+                    }
+                } while (!clientIsProfessional.equalsIgnoreCase("yes") && !clientIsProfessional.equalsIgnoreCase("no"));
+
+                ClientDTO newClient = new ClientDTO(
+                        null,
+                        clientName,
+                        clientAddress,
+                        clientEmail1,
+                        clientPhoneNumber,
+                        clientIsProfessional.equalsIgnoreCase("yes")
+                );
+
+                ClientDTO clientDTO = clientController.createClient(newClient);
+                if (clientDTO != null) {
+                    session.setId(clientDTO.getId());
+                } else {
+                    System.out.println(RED + "Failed to create client" + RESET);
+                }
+                return clientDTO != null;
+
+
+            default:
+                System.out.println(RED + "Invalid option" + RESET);
+                projectsMenu(3);
+                return false;
+        }
+    }
+
 
 }
