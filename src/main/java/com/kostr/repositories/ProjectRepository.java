@@ -34,12 +34,13 @@ public class ProjectRepository implements ProjectRepositoryInterface {
 
     @Override
     public Project addProject(Project project) throws SQLException {
-        String query = "INSERT INTO Projects (name, profitMargin, surfaceArea, type) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO Projects (name, profitMargin, surfaceArea, type, clientId) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, project.getName());
             ps.setDouble(2, project.getProfitMargin());
             ps.setDouble(3, project.getSurfaceArea());
             ps.setObject(4, project.getType(), java.sql.Types.OTHER);
+            ps.setObject(5, project.getClientId());
 
             int affectedRows = ps.executeUpdate();
             if (affectedRows == 0) {

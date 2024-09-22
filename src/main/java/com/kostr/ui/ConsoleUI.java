@@ -1,10 +1,15 @@
 package main.java.com.kostr.ui;
 
 import main.java.com.kostr.config.Session;
+import main.java.com.kostr.controllers.ClientController;
 import main.java.com.kostr.controllers.ProjectController;
+import main.java.com.kostr.dto.ClientDTO;
 import main.java.com.kostr.dto.ProjectDTO;
+import main.java.com.kostr.models.Client;
+import main.java.com.kostr.repositories.ClientRepository;
 import main.java.com.kostr.repositories.ProjectRepository;
 import main.java.com.kostr.repositories.interfaces.ProjectRepositoryInterface;
+import main.java.com.kostr.services.ClientService;
 import main.java.com.kostr.services.MaterialService;
 import main.java.com.kostr.services.ProjectService;
 import main.java.com.kostr.utils.InputValidator;
@@ -33,7 +38,7 @@ public class ConsoleUI {
         menu();
     }
 
-    public void menu(){
+    public void menu() throws SQLException {
         boolean exit = false;
 
         while(!exit){
@@ -76,10 +81,14 @@ public class ConsoleUI {
     }
 
 
-    public void projectsMenu(Integer option){
+    public void projectsMenu(Integer option) throws SQLException {
         ProjectRepository projectRepository = new ProjectRepository(connection);
         ProjectService projectService = new ProjectService(projectRepository);
         ProjectController projectController = new ProjectController(projectService);
+
+        ClientRepository clientRepository = new ClientRepository(connection);
+        ClientService clientService = new ClientService(clientRepository);
+        ClientController clientController = new ClientController(clientService);
 
         switch (option){
             case 1:
@@ -100,50 +109,62 @@ public class ConsoleUI {
 
                 switch (projectOption){
                     case 1:
-                        System.out.println(CYAN + "+ Add Project Selected +"+ RESET);
+                        System.out.println(YELLOW + "+ Associate Client +"+ RESET);
 
-                        String projectName;
-                        System.out.println(BLUE + "+ " + RESET + "Enter Project Name: ");
-                        do {
-                            projectName = session.getScanner().nextLine();
-                            if (!inputValidator.handleString(projectName)) {
-                                System.out.println(RED + "Invalid input! Please enter a valid project name (only alphabetic characters)." + RESET);
-                            }
-                        } while (!inputValidator.handleString(projectName));
 
-                        double projectProfitMargin;
-                        String profitMarginInput;
-                        System.out.println(BLUE + "+ " + RESET + "Enter Project Profit Margin: ");
-                        do {
-                            profitMarginInput = session.getScanner().nextLine();
-                            if (!inputValidator.handleDouble(profitMarginInput)) {
-                                System.out.println(RED + "Invalid input! Please enter a valid profit margin (must be greater than 0)." + RESET);
-                            }
-                        } while (!inputValidator.handleDouble(profitMarginInput) || (projectProfitMargin = Double.parseDouble(profitMarginInput)) <= 0);
+                        System.out.println(BLUE + "+ 1. " + RESET + "Search Clients");
+                        System.out.println(BLUE + "+ 2. " + RESET + "Add Client");
+                        int clientOption = session.getScanner().nextInt();
 
-                        double projectSurfaceArea;
-                        String surfaceAreaInput;
-                        System.out.println(BLUE + "+ " + RESET + "Enter Project Surface Area: ");
-                        do {
-                            surfaceAreaInput = session.getScanner().nextLine();
-                            if (!inputValidator.handleDouble(surfaceAreaInput)) {
-                                System.out.println(RED + "Invalid input! Please enter a valid surface area (must be greater than 0)." + RESET);
-                            }
-                        } while (!inputValidator.handleDouble(surfaceAreaInput) || (projectSurfaceArea = Double.parseDouble(surfaceAreaInput)) <= 0);
+                        switch (clientOption){
+                            case 1:
+                                System.out.println(BLUE + "+ " + RESET + "Enter Client Email: ");
+                                String clientEmail = session.getScanner().nextLine();
 
-                        String projectType;
-                        System.out.println(BLUE + "+ " + RESET + "Enter Project Type (Renovation / Construction): ");
-                        do {
-                            projectType = session.getScanner().nextLine();
-                            if (!projectType.equalsIgnoreCase("Renovation") && !projectType.equalsIgnoreCase("Construction")) {
-                                System.out.println(RED + "Invalid input! Please enter either 'Renovation' or 'Construction'." + RESET);
-                            }
-                        } while (!projectType.equalsIgnoreCase("Renovation") && !projectType.equalsIgnoreCase("Construction"));
+                                ClientDTO client = clientController.getClientByEmail(clientEmail);
+                                if (client != null) {
+                                    session.setId(client.getId());
+                                } else {
+                                    projectsMenu(3);
+                                }
 
-                        ProjectDTO projectDTO = new ProjectDTO(projectName, projectProfitMargin, projectSurfaceArea, projectType.toUpperCase());
+                                break;
+                            case 2:
+                                System.out.println(BLUE + "+ " + RESET + "Enter Client Name: ");
+                                String clientName = session.getScanner().nextLine();
+
+                                System.out.println(BLUE + "+ " + RESET + "Enter Client Address: ");
+                                String clientAddress = session.getScanner().nextLine();
+
+                                System.out.println(BLUE + "+ " + RESET + "Enter Client Email: ");
+                                String clientEmail1 = session.getScanner().nextLine();
+
+                                System.out.println(BLUE + "+ " + RESET + "Enter Client Phone Number: ");
+                                String clientPhoneNumber = session.getScanner().nextLine();
+
+                                System.out.println(BLUE + "+ " + RESET + "Is Client Professional? (yes/no): ");
+                                String clientIsProfessional = session.getScanner().nextLine();
+
+                                ClientDTO newClient = null;
+                                if (clientIsProfessional.equalsIgnoreCase("yes")) {
+                                    newClient = new ClientDTO(null,clientName, clientAddress, clientEmail1, clientPhoneNumber, true);
+                                } else if (clientIsProfessional.equalsIgnoreCase("no")) {
+                                    newClient = new ClientDTO(null,clientName, clientAddress, clientEmail1, clientPhoneNumber, false);
+                                }
+
+                                ClientDTO clientDTO = clientController.createClient(newClient);
+                                session.setId(clientDTO.getId());
+
+                                break;
+                            default:
+                                System.out.println(RED + "Invalid option" + RESET);
+                                projectsMenu(3);
+                                break;
+                        }
+
 
                         try {
-                            projectController.createProject(projectDTO);
+                            projectController.createProject(addProject());
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -173,4 +194,49 @@ public class ConsoleUI {
     public void componentsMenu(Integer option){
 
     }
+
+    private ProjectDTO addProject(){
+        String projectName;
+        System.out.println(BLUE + "+ " + RESET + "Enter Project Name: ");
+        do {
+            projectName = session.getScanner().nextLine();
+            if (!inputValidator.handleString(projectName)) {
+                System.out.println(RED + "Invalid input! Please enter a valid project name (only alphabetic characters)." + RESET);
+            }
+        } while (!inputValidator.handleString(projectName));
+
+        double projectProfitMargin;
+        String profitMarginInput;
+        System.out.println(BLUE + "+ " + RESET + "Enter Project Profit Margin: ");
+        do {
+            profitMarginInput = session.getScanner().nextLine();
+            if (!inputValidator.handleDouble(profitMarginInput)) {
+                System.out.println(RED + "Invalid input! Please enter a valid profit margin (must be greater than 0)." + RESET);
+            }
+        } while (!inputValidator.handleDouble(profitMarginInput) || (projectProfitMargin = Double.parseDouble(profitMarginInput)) <= 0);
+
+        double projectSurfaceArea;
+        String surfaceAreaInput;
+        System.out.println(BLUE + "+ " + RESET + "Enter Project Surface Area: ");
+        do {
+            surfaceAreaInput = session.getScanner().nextLine();
+            if (!inputValidator.handleDouble(surfaceAreaInput)) {
+                System.out.println(RED + "Invalid input! Please enter a valid surface area (must be greater than 0)." + RESET);
+            }
+        } while (!inputValidator.handleDouble(surfaceAreaInput) || (projectSurfaceArea = Double.parseDouble(surfaceAreaInput)) <= 0);
+
+        String projectType;
+        System.out.println(BLUE + "+ " + RESET + "Enter Project Type (Renovation / Construction): ");
+        do {
+            projectType = session.getScanner().nextLine();
+            if (!projectType.equalsIgnoreCase("Renovation") && !projectType.equalsIgnoreCase("Construction")) {
+                System.out.println(RED + "Invalid input! Please enter either 'Renovation' or 'Construction'." + RESET);
+            }
+        } while (!projectType.equalsIgnoreCase("Renovation") && !projectType.equalsIgnoreCase("Construction"));
+
+        ProjectDTO projectDTO = new ProjectDTO(projectName, projectProfitMargin, projectSurfaceArea, projectType.toUpperCase(), session.getId());
+
+        return projectDTO;
+    }
+
 }
