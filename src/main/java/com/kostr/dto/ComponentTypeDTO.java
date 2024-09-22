@@ -41,7 +41,7 @@ public class ComponentTypeDTO {
 
     @Override
     public String toString() {
-        return "ComponentTypeDTO{" +
+        return "ComponentType : {" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", type=" + type +
