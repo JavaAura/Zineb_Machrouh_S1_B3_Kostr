@@ -1,5 +1,7 @@
 package main.java.com.kostr.config;
 
+import java.util.Random;
+import java.util.Scanner;
 import java.util.UUID;
 
 public class Session {
@@ -51,5 +53,9 @@ public class Session {
 
     public void setLoggedIn(boolean loggedIn) {
         Session.loggedIn = loggedIn;
+    }
+
+    public Scanner getScanner() {
+        return new Scanner(System.in);
     }
 }
