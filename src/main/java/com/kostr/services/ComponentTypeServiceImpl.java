@@ -10,11 +10,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-public class ComponetTypeServiceImpl implements ComponetTypeService {
+public class ComponentTypeServiceImpl implements ComponetTypeService {
     private ComponentTypeRepository componentTypeRepository;
-    private static final Logger logger = Logger.getLogger(ComponetTypeServiceImpl.class.getName());
+    private static final Logger logger = Logger.getLogger(ComponentTypeServiceImpl.class.getName());
 
-    public ComponetTypeServiceImpl(ComponentTypeRepository componentTypeRepository) {
+    public ComponentTypeServiceImpl(ComponentTypeRepository componentTypeRepository) {
         this.componentTypeRepository = componentTypeRepository;
     }
 

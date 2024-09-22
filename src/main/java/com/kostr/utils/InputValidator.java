@@ -1,6 +1,7 @@
 package main.java.com.kostr.utils;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public class InputValidator {
         // Handle names (only alphabetic characters)
@@ -42,4 +43,12 @@ public class InputValidator {
             return email != null && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$");
         }
 
+        public  boolean isUUID(String uuid) {
+            try {
+                UUID.fromString(uuid);
+                return true;
+            } catch (IllegalArgumentException e) {
+                return false;
+            }
+        }
 }

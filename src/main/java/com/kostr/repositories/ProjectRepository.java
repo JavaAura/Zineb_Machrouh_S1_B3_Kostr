@@ -121,8 +121,19 @@ public class ProjectRepository implements ProjectRepositoryInterface {
             try(ResultSet rs = ps.executeQuery()){
                 ArrayList<Project> projects = new ArrayList<>();
                 while(rs.next()){
-                    projects.add(new Project(UUID.fromString(rs.getString("id")), rs.getString("name"), rs.getDouble("profitMargin"), rs.getDouble("totalCost"), rs.getDouble("surfaceArea"),ProjectType.valueOf(rs.getString("type")), ProjectStatus.valueOf(rs.getString("status")), UUID.fromString(rs.getString("clientId"))));
-                }
+                    UUID id = rs.getString("id") != null ? UUID.fromString(rs.getString("id")) : null;
+                    UUID clientId = rs.getString("clientId") != null ? UUID.fromString(rs.getString("clientId")) : null;
+
+                    projects.add(new Project(
+                            id,
+                            rs.getString("name"),
+                            rs.getDouble("profitMargin"),
+                            rs.getDouble("totalCost"),
+                            rs.getDouble("surfaceArea"),
+                            ProjectType.valueOf(rs.getString("type")),
+                            ProjectStatus.valueOf(rs.getString("status")),
+                            clientId
+                    ));                }
                 return projects;
             }
         }

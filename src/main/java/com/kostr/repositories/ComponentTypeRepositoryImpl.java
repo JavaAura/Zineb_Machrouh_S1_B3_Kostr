@@ -11,11 +11,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class ComponetTypeRepositoryImpl implements ComponentTypeRepository {
+public class ComponentTypeRepositoryImpl implements ComponentTypeRepository {
 
     private final Connection connection;
 
-    public ComponetTypeRepositoryImpl(Connection connection) {
+    public ComponentTypeRepositoryImpl(Connection connection) {
         this.connection = connection;
     }
 
@@ -37,7 +37,7 @@ public class ComponetTypeRepositoryImpl implements ComponentTypeRepository {
 
         try(PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, componentType.getName());
-            preparedStatement.setObject(2, componentType.getType());
+            preparedStatement.setObject(2, componentType.getType(), java.sql.Types.OTHER);
 
             int affectedRows = preparedStatement.executeUpdate();
 
@@ -51,7 +51,7 @@ public class ComponetTypeRepositoryImpl implements ComponentTypeRepository {
 
     @Override
     public void removeComponentType(String id) throws SQLException {
-        String query = "DELETE FROM ComponentTypes WHERE id = ?";
+        String query = "DELETE FROM ComponentTypes WHERE id = ?::uuid";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, id);
             ps.executeUpdate();
@@ -60,10 +60,10 @@ public class ComponetTypeRepositoryImpl implements ComponentTypeRepository {
 
     @Override
     public ComponentType updateComponentType(ComponentType componentType) throws SQLException {
-        String query = "UPDATE ComponentTypes SET name = ?, type = ? WHERE id = ?";
+        String query = "UPDATE ComponentTypes SET name = ?, type = ? WHERE id = ?::uuid";
         try(PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, componentType.getName());
-            ps.setObject(2, componentType.getType());
+            ps.setObject(2, componentType.getType(), java.sql.Types.OTHER);
             ps.setString(3, componentType.getId().toString());
 
             int affectedRows = ps.executeUpdate();
@@ -86,7 +86,7 @@ public class ComponetTypeRepositoryImpl implements ComponentTypeRepository {
             while (rs.next()) {
                 UUID id = UUID.fromString(rs.getString("id"));
                 String name = rs.getString("name");
-                main.java.com.kostr.models.enums.ComponentType type = (main.java.com.kostr.models.enums.ComponentType) rs.getObject("type");
+                main.java.com.kostr.models.enums.ComponentType type = main.java.com.kostr.models.enums.ComponentType.valueOf(rs.getString("type"));
                 componentTypes.add(new ComponentType(id, name, type));
             }
             return componentTypes;
@@ -95,14 +95,21 @@ public class ComponetTypeRepositoryImpl implements ComponentTypeRepository {
 
     @Override
     public ComponentType getComponentTypeById(String id) throws SQLException {
-        String query = "SELECT * FROM ComponentTypes WHERE id = ?";
+        String query = "SELECT * FROM ComponentTypes WHERE id = ?::uuid";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, id);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new ComponentType(UUID.fromString(rs.getString("id")), rs.getString("name"), (main.java.com.kostr.models.enums.ComponentType) rs.getObject("type"));
-                } else {
+                    String componentTypeString = rs.getString("type");
+
+                    main.java.com.kostr.models.enums.ComponentType componentTypeEnum = main.java.com.kostr.models.enums.ComponentType.valueOf(componentTypeString);
+
+                    return new ComponentType(
+                            UUID.fromString(rs.getString("id")),
+                            rs.getString("name"),
+                            componentTypeEnum
+                    );                } else {
                     return null;
                 }
             }

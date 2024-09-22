@@ -99,7 +99,7 @@ public class ProjectDTO {
 
     @Override
     public String toString() {
-        return "ProjectDTO{" +
+        return "Project : {" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", profitMargin=" + profitMargin +
@@ -108,7 +108,7 @@ public class ProjectDTO {
                 ", type=" + type +
                 ", status=" + status +
                 ", clientId=" + clientId +
-                '}';
+                '}'+ "\n";
     }
 
     @Override
