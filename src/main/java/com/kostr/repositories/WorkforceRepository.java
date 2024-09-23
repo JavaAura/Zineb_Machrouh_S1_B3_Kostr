@@ -32,7 +32,7 @@ public class WorkforceRepository implements WorkforceRepositoryInterface {
 
     @Override
     public Workforce addWorkforce(Workforce workforce) throws SQLException {
-        String query = "INSERT INTO Workforce (name, type, vatRate, totalPrice, projectId, hourlyRate, hoursWorked, workerProductivity) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Workforce (name, type, vatRate, totalPrice, projectId, hourlyRate, hoursWorked, workerProductivity) VALUES (?, ?::uuid, ?, ?, ?::uuid, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, workforce.getName());
             ps.setString(2, workforce.getType().toString());
@@ -87,7 +87,7 @@ public class WorkforceRepository implements WorkforceRepositoryInterface {
 
     @Override
     public Workforce getWorkforceById(String id) throws SQLException {
-        String query = "SELECT DISTINCT * FROM Workforce WHERE id = ?";
+        String query = "SELECT DISTINCT * FROM Workforce WHERE id = ?::uuid";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, id);
 
