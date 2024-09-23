@@ -180,7 +180,6 @@ public class ProjectController {
         }
 
         try {
-            System.out.println(BLUE + "Updating total cost for project with ID: " + projectId + RESET);
             Project updatedProject = projectService.updateTotalCost(projectId, totalCost);
             if (updatedProject != null) {
                 return ProjectDTO.modelToDTO(updatedProject);

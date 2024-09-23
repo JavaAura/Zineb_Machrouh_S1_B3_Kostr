@@ -4,6 +4,7 @@ import main.java.com.kostr.config.Session;
 import main.java.com.kostr.controllers.*;
 import main.java.com.kostr.dto.*;
 import main.java.com.kostr.models.Client;
+import main.java.com.kostr.models.Component;
 import main.java.com.kostr.models.Workforce;
 import main.java.com.kostr.models.enums.ComponentType;
 import main.java.com.kostr.repositories.*;
@@ -14,6 +15,7 @@ import main.java.com.kostr.utils.InputValidator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -21,18 +23,18 @@ import java.util.logging.Logger;
 public class ConsoleUI {
     private final Connection connection;
     private static Session session = Session.getInstance();
+
     private static final Logger logger = Logger.getLogger(ConsoleUI.class.getName());
-    private final InputValidator inputValidator = new InputValidator();
+    private final InputValidator inputValidator = new InputValidator()
+            ;
     private String projectId;
     private double estimatedCost = 0;
+
+    ArrayList<ComponentDTO> components = new ArrayList<>();
 
     public static final String RESET = "\033[0m";
     public static final String RED = "\033[0;31m";
     public static final String BLUE = "\033[0;34m";
-    public static final String MAGENTA = "\033[0;35m";
-    public static final String CYAN = "\033[0;36m";
-    public static final String PINK = "\033[38;5;13m";
-    public static final String GREEN = "\u001b[92m";
     public static final String YELLOW = "\u001b[93m";
 
     public ConsoleUI(Connection connection) throws SQLException {
@@ -171,7 +173,7 @@ public class ConsoleUI {
                                 }
                             }
 
-                            generateQuote();
+                            QuoteDTO quoteDTO = generateQuote();
                         } else {
                             System.out.println(RED + "Project creation failed." + RESET);
                         }
@@ -361,6 +363,7 @@ public class ConsoleUI {
                 ClientDTO client = clientController.getClientByEmail(clientEmail);
                 if (client != null) {
                     session.setId(client.getId());
+                    session.setProfesional(client.isProfessional());
                 } else {
                     projectsMenu(3);
                 }
@@ -424,6 +427,7 @@ public class ConsoleUI {
                 ClientDTO clientDTO = clientController.createClient(newClient);
                 if (clientDTO != null) {
                     session.setId(clientDTO.getId());
+                    session.setProfesional(clientDTO.isProfessional());
                 } else {
                     System.out.println(RED + "Failed to create client" + RESET);
                 }
@@ -532,6 +536,7 @@ public class ConsoleUI {
                 qualityCoefficient
         );
 
+        components.add(materialDTO);
         setEstimatedCost(getEstimatedCost() + totalPrice);
 
         return materialDTO;
@@ -617,6 +622,8 @@ public class ConsoleUI {
                 hoursWorked,
                 workerProductivity
         );
+
+        components.add(workforceDTO);
         setEstimatedCost(getEstimatedCost() + totalPrice);
 
         return workforceDTO;
@@ -630,5 +637,9 @@ public class ConsoleUI {
         QuoteDTO quoteDTO = new QuoteDTO(null, UUID.fromString(getProjectId()), getEstimatedCost(), null, null, false);
 
         return quoteController.createQuote(quoteDTO);
+    }
+
+    private void calculateCost(){
+
     }
 }

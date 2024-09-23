@@ -6,11 +6,10 @@ import java.util.UUID;
 
 public class Session {
     private UUID id;
-    private String name;
-    private String role;
+    private boolean isProfesional;
 
     private static Session instance = null;
-    private static boolean loggedIn = false;
+
 
     private Session() {
     }
@@ -23,21 +22,12 @@ public class Session {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public boolean isProfesional() {
+        return isProfesional;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
+    public void setProfesional(boolean isProfesional) {
+        this.isProfesional = isProfesional;
     }
 
     public static Session getInstance() {
@@ -47,13 +37,6 @@ public class Session {
         return instance;
     }
 
-    public boolean isLoggedIn() {
-        return loggedIn;
-    }
-
-    public void setLoggedIn(boolean loggedIn) {
-        Session.loggedIn = loggedIn;
-    }
 
     public Scanner getScanner() {
         return new Scanner(System.in);
