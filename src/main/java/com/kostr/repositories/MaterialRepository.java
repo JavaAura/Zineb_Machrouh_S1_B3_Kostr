@@ -32,7 +32,7 @@ public class MaterialRepository implements MaterialRepositoryInterface {
 
     @Override
     public Material addMaterial(Material material) throws SQLException {
-        String query = "INSERT INTO Materials (name, type, vatRate, totalPrice, projectId, unitCost, quantity, transportCost, qualityCoefficient) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Materials (name, type, vatRate, totalPrice, projectId, unitCost, quantity, transportCost, qualityCoefficient) VALUES (?, ?::uuid, ?, ?, ?::uuid, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, material.getName());
             ps.setString(2, material.getType().toString());
@@ -55,7 +55,7 @@ public class MaterialRepository implements MaterialRepositoryInterface {
 
     @Override
     public void removeMaterial(String id) throws SQLException {
-        String query = "DELETE FROM Materials WHERE id = ?";
+        String query = "DELETE FROM Materials WHERE id = ?::uuid";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, id);
             ps.executeUpdate();
@@ -64,7 +64,7 @@ public class MaterialRepository implements MaterialRepositoryInterface {
 
     @Override
     public Material updateMaterial(Material material) throws SQLException {
-        String query = "UPDATE Materials SET name = ?, vatRate = ?, type = ?, totalPrice = ?, projectId = ?, unitCost = ?, quantity = ?, transportCost = ?, qualityCoefficient = ? WHERE id = ?";
+        String query = "UPDATE Materials SET name = ?, vatRate = ?, type = ?, totalPrice = ?, projectId = ?::uuid, unitCost = ?, quantity = ?, transportCost = ?, qualityCoefficient = ? WHERE id = ?::uuid";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, material.getName());
             ps.setDouble(2, material.getVatRate());
@@ -88,7 +88,7 @@ public class MaterialRepository implements MaterialRepositoryInterface {
 
     @Override
     public Material getMaterialById(String id) throws SQLException {
-        String query = "SELECT * FROM Materials WHERE id = ?";
+        String query = "SELECT * FROM Materials WHERE id = ?::uuid";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, id);
 

@@ -1,22 +1,15 @@
 package main.java.com.kostr.ui;
 
 import main.java.com.kostr.config.Session;
-import main.java.com.kostr.controllers.ClientController;
-import main.java.com.kostr.controllers.ComponentTypeController;
-import main.java.com.kostr.controllers.ProjectController;
-import main.java.com.kostr.dto.ClientDTO;
-import main.java.com.kostr.dto.ComponentTypeDTO;
-import main.java.com.kostr.dto.ProjectDTO;
+import main.java.com.kostr.controllers.*;
+import main.java.com.kostr.dto.*;
 import main.java.com.kostr.models.Client;
+import main.java.com.kostr.models.Workforce;
 import main.java.com.kostr.models.enums.ComponentType;
-import main.java.com.kostr.repositories.ClientRepository;
-import main.java.com.kostr.repositories.ComponentTypeRepositoryImpl;
-import main.java.com.kostr.repositories.ProjectRepository;
+import main.java.com.kostr.repositories.*;
 import main.java.com.kostr.repositories.interfaces.ProjectRepositoryInterface;
-import main.java.com.kostr.services.ClientService;
-import main.java.com.kostr.services.ComponentTypeServiceImpl;
-import main.java.com.kostr.services.MaterialService;
-import main.java.com.kostr.services.ProjectService;
+import main.java.com.kostr.services.*;
+import main.java.com.kostr.utils.CostCalculator;
 import main.java.com.kostr.utils.InputValidator;
 
 import java.sql.Connection;
@@ -30,6 +23,7 @@ public class ConsoleUI {
     private static Session session = Session.getInstance();
     private static final Logger logger = Logger.getLogger(ConsoleUI.class.getName());
     private final InputValidator inputValidator = new InputValidator();
+    private String projectId;
 
     public static final String RESET = "\033[0m";
     public static final String RED = "\033[0;31m";
@@ -43,6 +37,14 @@ public class ConsoleUI {
     public ConsoleUI(Connection connection) throws SQLException {
         this.connection = connection;
         menu();
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
     }
 
     public void menu() throws SQLException {
@@ -107,6 +109,14 @@ public class ConsoleUI {
         ClientService clientService = new ClientService(clientRepository);
         ClientController clientController = new ClientController(clientService);
 
+        MaterialRepository materialRepository = new MaterialRepository(connection);
+        MaterialService materialService = new MaterialService(materialRepository);
+        MaterialController materialController = new MaterialController(materialService);
+
+        WorkforceRepository workforceRepository = new WorkforceRepository(connection);
+        WorkforceService workforceService = new WorkforceService(workforceRepository);
+        WorkforceController workforceController = new WorkforceController(workforceService);
+
         switch (option){
             case 1:
                 System.out.println(YELLOW + "+ View All Projects +" + RESET);
@@ -122,7 +132,39 @@ public class ConsoleUI {
 
                     if (clientAssociated) {
                         System.out.println(YELLOW + "+ Create Project +" + RESET);
-                        projectController.createProject(addProject());
+                        ProjectDTO projectDTO = projectController.createProject(addProject());
+
+                        setProjectId(projectDTO.getId().toString());
+                        if (projectDTO != null) {
+                            boolean addMoreMaterials = false;
+                            boolean addMoreWorkforce = false;
+
+                            while (!addMoreMaterials) {
+                                System.out.println(BLUE + "+ Add Material +" + RESET);
+                                MaterialDTO materialDTO = addMaterial();
+                                materialController.createMaterial(materialDTO);
+
+                                System.out.println(BLUE + "+ " + RESET + "Add another material? (yes/no): ");
+                                String addMaterial = session.getScanner().nextLine();
+                                if (!addMaterial.equalsIgnoreCase("yes")) {
+                                    addMoreMaterials = true;
+                                }
+                            }
+
+                            while (!addMoreWorkforce) {
+                                System.out.println(BLUE + "+ Add Workforce +" + RESET);
+                                WorkforceDTO workforceDTO = addWorkforce();
+                                workforceController.createWorkforce(workforceDTO);
+
+                                System.out.println(BLUE + "+ " + RESET + "Add another workforce? (yes/no): ");
+                                String addWorkforce = session.getScanner().nextLine();
+                                if (!addWorkforce.equalsIgnoreCase("yes")) {
+                                    addMoreWorkforce = true;
+                                }
+                            }
+                        } else {
+                            System.out.println(RED + "Project creation failed." + RESET);
+                        }
                     } else {
                         System.out.println(RED + "Client association failed. Cannot create project." + RESET);
                     }
@@ -386,5 +428,185 @@ public class ConsoleUI {
         }
     }
 
+    private MaterialDTO addMaterial() throws SQLException {
+        ComponentTypeRepositoryImpl componentTypeRepository = new ComponentTypeRepositoryImpl(connection);
+        ComponentTypeServiceImpl componentTypeService = new ComponentTypeServiceImpl(componentTypeRepository);
+        ComponentTypeController componentTypeController = new ComponentTypeController(componentTypeService);
 
+        String materialName;
+        System.out.println(BLUE + "+ " + RESET + "Enter Material Name: ");
+        do {
+            materialName = session.getScanner().nextLine();
+            if (!inputValidator.handleString(materialName)) {
+                System.out.println(RED + "Invalid input! Please enter a valid material name (only alphabetic characters)." + RESET);
+            }
+        } while (!inputValidator.handleString(materialName));
+
+        String componentType;
+        System.out.println(BLUE + "+ All Material Types +" + RESET);
+        componentTypeController.getAllComponentTypes().stream().filter(componentTypeDTO -> componentTypeDTO.getType().equals(ComponentType.MATERIALS)).forEach(System.out::println);
+        System.out.println(BLUE + "+ " + RESET + "Enter Component Type Id: ");
+
+        do {
+            componentType = session.getScanner().nextLine();
+            if (!inputValidator.isUUID(componentType)) {
+                System.out.println(RED + "Invalid input! Please enter a valid component type (only alphabetic characters)." + RESET);
+            }
+        } while (!inputValidator.isUUID(componentType));
+
+        double vatRate;
+        String vatRateInput;
+
+        System.out.println(BLUE + "+ " + RESET + "Enter VAT Rate: ");
+        do {
+            vatRateInput = session.getScanner().nextLine();
+            if (!inputValidator.handleDouble(vatRateInput)) {
+                System.out.println(RED + "Invalid input! Please enter a valid VAT rate (must be greater than 0)." + RESET);
+            }
+        } while (!inputValidator.handleDouble(vatRateInput) || (vatRate = Double.parseDouble(vatRateInput)) <= 0);
+
+        String projectID = getProjectId();
+
+        double unitCost;
+        String unitCostInput;
+        System.out.println(BLUE + "+ " + RESET + "Enter Unit Cost: ");
+        do {
+            unitCostInput = session.getScanner().nextLine();
+            if (!inputValidator.handleDouble(unitCostInput)) {
+                System.out.println(RED + "Invalid input! Please enter a valid unit cost (must be greater than 0)." + RESET);
+            }
+        } while (!inputValidator.handleDouble(unitCostInput) || (unitCost = Double.parseDouble(unitCostInput)) <= 0);
+
+        double quantity;
+        String quantityInput;
+        System.out.println(BLUE + "+ " + RESET + "Enter Quantity: ");
+        do {
+            quantityInput = session.getScanner().nextLine();
+            if (!inputValidator.handleDouble(quantityInput)) {
+                System.out.println(RED + "Invalid input! Please enter a valid quantity (must be greater than 0)." + RESET);
+            }
+        } while (!inputValidator.handleDouble(quantityInput) || (quantity = Double.parseDouble(quantityInput)) <= 0);
+
+        double transportCost;
+        String transportCostInput;
+        System.out.println(BLUE + "+ " + RESET + "Enter Transport Cost: ");
+        do {
+            transportCostInput = session.getScanner().nextLine();
+            if (!inputValidator.handleDouble(transportCostInput)) {
+                System.out.println(RED + "Invalid input! Please enter a valid transport cost (must be greater than 0)." + RESET);
+            }
+        } while (!inputValidator.handleDouble(transportCostInput) || (transportCost = Double.parseDouble(transportCostInput)) <= 0);
+
+        double qualityCoefficient;
+        String qualityCoefficientInput;
+        System.out.println(BLUE + "+ " + RESET + "Enter Quality Coefficient (1.0 or 1.1): ");
+        do {
+            qualityCoefficientInput = session.getScanner().nextLine();
+            if (!inputValidator.handleDouble(qualityCoefficientInput)) {
+                System.out.println(RED + "Invalid input! Please enter a valid quality coefficient (must be 1.0 or 1.1)." + RESET);
+            }
+        } while (!inputValidator.handleDouble(qualityCoefficientInput) || (qualityCoefficient = Double.parseDouble(qualityCoefficientInput)) != 1.0 && qualityCoefficient != 1.1);
+
+        CostCalculator costCalculator = new CostCalculator();
+        double totalPrice = costCalculator.materialCost(unitCost, quantity, qualityCoefficient, transportCost);
+
+        MaterialDTO materialDTO = new MaterialDTO(
+                null,
+                materialName,
+                UUID.fromString(componentType),
+                vatRate,
+                totalPrice,
+                UUID.fromString(getProjectId()),
+                unitCost,
+                quantity,
+                transportCost,
+                qualityCoefficient
+        );
+
+        return materialDTO;
+    }
+
+    private WorkforceDTO addWorkforce() throws SQLException{
+        ComponentTypeRepositoryImpl componentTypeRepository = new ComponentTypeRepositoryImpl(connection);
+        ComponentTypeServiceImpl componentTypeService = new ComponentTypeServiceImpl(componentTypeRepository);
+        ComponentTypeController componentTypeController = new ComponentTypeController(componentTypeService);
+
+        String workforceName;
+        System.out.println(BLUE + "+ " + RESET + "Enter Workforce Name: ");
+        do {
+            workforceName = session.getScanner().nextLine();
+            if (!inputValidator.handleString(workforceName)) {
+                System.out.println(RED + "Invalid input! Please enter a valid workforce name (only alphabetic characters)." + RESET);
+            }
+        } while (!inputValidator.handleString(workforceName));
+
+        String componentType;
+        System.out.println(BLUE + "+ All Workforce Types +" + RESET);
+        componentTypeController.getAllComponentTypes().stream().filter(componentTypeDTO -> componentTypeDTO.getType().equals(ComponentType.WORKFORCE)).forEach(System.out::println);
+        System.out.println(BLUE + "+ " + RESET + "Enter Component Type Id: ");
+
+        do {
+            componentType = session.getScanner().nextLine();
+            if (!inputValidator.isUUID(componentType)) {
+                System.out.println(RED + "Invalid input! Please enter a valid component type (only alphabetic characters)." + RESET);
+            }
+        } while (!inputValidator.isUUID(componentType));
+
+        double vatRate;
+        String vatRateInput;
+        System.out.println(BLUE + "+ " + RESET + "Enter VAT Rate: ");
+        do {
+            vatRateInput = session.getScanner().nextLine();
+            if (!inputValidator.handleDouble(vatRateInput)) {
+                System.out.println(RED + "Invalid input! Please enter a valid VAT rate (must be greater than 0)." + RESET);
+            }
+        } while (!inputValidator.handleDouble(vatRateInput) || (vatRate = Double.parseDouble(vatRateInput)) <= 0);
+
+        double hourlyRate;
+        String hourlyRateInput;
+        System.out.println(BLUE + "+ " + RESET + "Enter Hourly Rate: ");
+        do {
+            hourlyRateInput = session.getScanner().nextLine();
+            if (!inputValidator.handleDouble(hourlyRateInput)) {
+                System.out.println(RED + "Invalid input! Please enter a valid hourly rate (must be greater than 0)." + RESET);
+            }
+        } while (!inputValidator.handleDouble(hourlyRateInput) || (hourlyRate = Double.parseDouble(hourlyRateInput)) <= 0);
+
+        double hoursWorked;
+        String hoursWorkedInput;
+        System.out.println(BLUE + "+ " + RESET + "Enter Hours Worked: ");
+        do {
+            hoursWorkedInput = session.getScanner().nextLine();
+            if (!inputValidator.handleDouble(hoursWorkedInput)) {
+                System.out.println(RED + "Invalid input! Please enter a valid hours worked (must be greater than 0)." + RESET);
+            }
+        } while (!inputValidator.handleDouble(hoursWorkedInput) || (hoursWorked = Double.parseDouble(hoursWorkedInput)) <= 0);
+
+        double workerProductivity;
+        String workerProductivityInput;
+        System.out.println(BLUE + "+ " + RESET + "Enter Worker Productivity (1.0 or 1.1): ");
+        do {
+            workerProductivityInput = session.getScanner().nextLine();
+            if (!inputValidator.handleDouble(workerProductivityInput)) {
+                System.out.println(RED + "Invalid input! Please enter a valid worker productivity (must be 1.0 or 1.1)." + RESET);
+            }
+        } while (!inputValidator.handleDouble(workerProductivityInput) || (workerProductivity = Double.parseDouble(workerProductivityInput)) != 1.0 && workerProductivity != 1.1);
+
+        CostCalculator costCalculator = new CostCalculator();
+        double totalPrice = costCalculator.workforceCost(hourlyRate, hoursWorked, workerProductivity);
+
+        WorkforceDTO workforceDTO = new WorkforceDTO(
+                null,
+                workforceName,
+                UUID.fromString(componentType),
+                vatRate,
+                totalPrice,
+                UUID.fromString(getProjectId()),
+                hourlyRate,
+                hoursWorked,
+                workerProductivity
+        );
+
+        return workforceDTO;
+    }
 }

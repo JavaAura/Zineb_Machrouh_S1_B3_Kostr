@@ -21,16 +21,16 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
-    public void createProject(ProjectDTO projectDTO) throws SQLException {
+    public ProjectDTO createProject(ProjectDTO projectDTO) throws SQLException {
         if (projectDTO == null) {
             System.out.println(RED + "ProjectDTO is null" + RESET);
-            //return null;
+            return null;
         }
 
         try {
             Project project = projectService.addProject(projectDTO);
             System.out.println(YELLOW + "Project created successfully" + RESET);
-            //return ProjectDTO.modelToDTO(project);
+            return ProjectDTO.modelToDTO(project);
         } catch (SQLException e) {
             System.out.println(RED + "Error creating project" + RESET);
             throw e;

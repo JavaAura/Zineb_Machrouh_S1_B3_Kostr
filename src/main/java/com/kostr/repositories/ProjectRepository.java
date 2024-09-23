@@ -34,7 +34,7 @@ public class ProjectRepository implements ProjectRepositoryInterface {
 
     @Override
     public Project addProject(Project project) throws SQLException {
-        String query = "INSERT INTO Projects (name, profitMargin, surfaceArea, type, clientId) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO Projects (name, profitMargin, surfaceArea, type, clientId) VALUES (?, ?, ?, ?, ?) RETURNING *";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, project.getName());
             ps.setDouble(2, project.getProfitMargin());
@@ -42,11 +42,22 @@ public class ProjectRepository implements ProjectRepositoryInterface {
             ps.setObject(4, project.getType(), java.sql.Types.OTHER);
             ps.setObject(5, project.getClientId());
 
-            int affectedRows = ps.executeUpdate();
-            if (affectedRows == 0) {
-                throw new SQLException("Failed to insert project, no rows affected.");
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Project(
+                            UUID.fromString(rs.getString("id")),
+                            rs.getString("name"),
+                            rs.getDouble("profitMargin"),
+                            rs.getDouble("totalCost"),
+                            rs.getDouble("surfaceArea"),
+                            ProjectType.valueOf(rs.getString("type")),
+                            ProjectStatus.valueOf(rs.getString("status")),
+                            UUID.fromString(rs.getString("clientId"))
+                    );
+                } else {
+                    throw new SQLException("Failed to retrieve inserted project.");
+                }
             }
-            return getProjectModel(project, ps);
         }
     }
 

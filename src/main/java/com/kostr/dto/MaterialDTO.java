@@ -80,6 +80,16 @@ public class MaterialDTO extends ComponentDTO{
     }
 
     public static MaterialDTO modelToDTO(Material material) {
-        return new MaterialDTO(material.getId(), material.getName(), material.getType(), material.getVatRate(), material.getTotalPrice(), material.getProjectId(), material.getUnitCost(), material.getQuantity(), material.getTransportCost(), material.getQualityCoefficient());
+        return new MaterialDTO(
+                material.getId(),
+                material.getName(),
+                material.getType(),
+                material.getVatRate(),
+                material.getTotalPrice(),
+                material.getProjectId(),
+                material.getUnitCost(),
+                material.getQuantity(),
+                material.getTransportCost(),
+                material.getQualityCoefficient());
     }
 }
