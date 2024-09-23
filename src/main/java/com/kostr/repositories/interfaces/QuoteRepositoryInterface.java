@@ -10,4 +10,5 @@ public interface QuoteRepositoryInterface {
     public Quote getQuoteByProject(String projectId) throws SQLException;
     public void updateDates(String id, String issueDate, String validityDate) throws SQLException;
     public void updateStatus(String id, boolean status) throws SQLException;
+    public Quote getQuote(String id) throws SQLException;
 }

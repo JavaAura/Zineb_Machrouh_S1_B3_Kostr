@@ -24,6 +24,7 @@ public class ConsoleUI {
     private static final Logger logger = Logger.getLogger(ConsoleUI.class.getName());
     private final InputValidator inputValidator = new InputValidator();
     private String projectId;
+    private double estimatedCost = 0;
 
     public static final String RESET = "\033[0m";
     public static final String RED = "\033[0;31m";
@@ -45,6 +46,13 @@ public class ConsoleUI {
 
     public void setProjectId(String projectId) {
         this.projectId = projectId;
+    }
+
+    public double getEstimatedCost() {
+        return estimatedCost;
+    }
+    public void setEstimatedCost(double estimatedCost) {
+        this.estimatedCost = estimatedCost;
     }
 
     public void menu() throws SQLException {
@@ -162,6 +170,8 @@ public class ConsoleUI {
                                     addMoreWorkforce = true;
                                 }
                             }
+
+                            generateQuote();
                         } else {
                             System.out.println(RED + "Project creation failed." + RESET);
                         }
@@ -327,7 +337,6 @@ public class ConsoleUI {
         } while (!projectType.equalsIgnoreCase("Renovation") && !projectType.equalsIgnoreCase("Construction"));
 
         ProjectDTO projectDTO = new ProjectDTO(projectName, projectProfitMargin, projectSurfaceArea, projectType.toUpperCase(), session.getId());
-
         return projectDTO;
     }
 
@@ -523,6 +532,8 @@ public class ConsoleUI {
                 qualityCoefficient
         );
 
+        setEstimatedCost(getEstimatedCost() + totalPrice);
+
         return materialDTO;
     }
 
@@ -606,7 +617,18 @@ public class ConsoleUI {
                 hoursWorked,
                 workerProductivity
         );
+        setEstimatedCost(getEstimatedCost() + totalPrice);
 
         return workforceDTO;
+    }
+
+    private QuoteDTO generateQuote() throws SQLException {
+        QuoteRepository quoteRepository = new QuoteRepository(connection);
+        QuoteService quoteService = new QuoteService(quoteRepository);
+        QuoteController quoteController = new QuoteController(quoteService);
+
+        QuoteDTO quoteDTO = new QuoteDTO(null, UUID.fromString(getProjectId()), getEstimatedCost(), null, null, false);
+
+        return quoteController.createQuote(quoteDTO);
     }
 }

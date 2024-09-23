@@ -101,7 +101,7 @@ public class QuoteDTO {
         return new Quote(id, projectId, estimatedCost, issueDate, validityDate, isAccepted);
     }
 
-    public QuoteDTO modelToDTO(Quote quote) {
+    public static QuoteDTO modelToDTO(Quote quote) {
         return new QuoteDTO(quote.getId(), quote.getProjectId(), quote.getEstimatedCost(), quote.getIssueDate(), quote.getValidityDate(), quote.isAccepted());
     }
 }

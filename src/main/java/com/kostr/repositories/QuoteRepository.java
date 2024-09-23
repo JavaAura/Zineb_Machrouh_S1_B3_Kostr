@@ -31,7 +31,7 @@ public class QuoteRepository implements QuoteRepositoryInterface {
 
     @Override
     public Quote addQuote(Quote quote) throws SQLException {
-        String query = "INSERT INTO Quotes (projectId, estimatedCost) VALUES (?, ?)";
+        String query = "INSERT INTO Quotes (projectId, estimatedCost) VALUES (?::uuid, ?)";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, quote.getProjectId().toString());
             ps.setDouble(2, quote.getEstimatedCost());
@@ -82,6 +82,22 @@ public class QuoteRepository implements QuoteRepositoryInterface {
             ps.setBoolean(1, status);
             ps.setString(2, id);
             ps.executeUpdate();
+        }
+    }
+
+    @Override
+    public Quote getQuote(String id) throws SQLException {
+        String query = "SELECT DISTINCT * FROM Quotes WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Quote((UUID) rs.getObject("id"), (UUID) rs.getObject("projectId"), rs.getDouble("estimatedCost"), rs.getDate("issueDate").toLocalDate(), rs.getDate("validityDate").toLocalDate(), rs.getBoolean("isAccepted"));
+                } else {
+                    return null;
+                }
+            }
         }
     }
 }
