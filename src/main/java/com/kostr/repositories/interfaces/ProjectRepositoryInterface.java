@@ -18,4 +18,5 @@ public interface ProjectRepositoryInterface {
     public Integer getClientProjectsCount(String clientId) throws SQLException;
     public Project addClientProject(String clientId, String projectId) throws SQLException;
     public Project updateStatus(String projectId, ProjectStatus status) throws SQLException;
+    public Project updateTotalCost(String projectId, double totalCost) throws SQLException;
 }

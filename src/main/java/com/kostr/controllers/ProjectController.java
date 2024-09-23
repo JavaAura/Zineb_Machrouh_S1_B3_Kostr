@@ -172,4 +172,25 @@ public class ProjectController {
             throw e;
         }
     }
+
+    public ProjectDTO updateTotalCost(String projectId, double totalCost) throws SQLException {
+        if (projectId == null || projectId.isEmpty()) {
+            System.out.println(RED + "Project ID is null or empty" + RESET);
+            return null;
+        }
+
+        try {
+            System.out.println(BLUE + "Updating total cost for project with ID: " + projectId + RESET);
+            Project updatedProject = projectService.updateTotalCost(projectId, totalCost);
+            if (updatedProject != null) {
+                return ProjectDTO.modelToDTO(updatedProject);
+            } else {
+                System.out.println(RED + "Project not found or total cost update failed" + RESET);
+                return null;
+            }
+        } catch (SQLException e) {
+            System.out.println(RED + "Error updating project total cost" + RESET);
+            throw e;
+        }
+    }
 }

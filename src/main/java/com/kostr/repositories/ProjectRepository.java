@@ -95,7 +95,7 @@ public class ProjectRepository implements ProjectRepositoryInterface {
 
     @Override
     public Project getProjectById(String id) throws SQLException {
-        String query = "SELECT * FROM Projects WHERE id = ?";
+        String query = "SELECT * FROM Projects WHERE id = ?::uuid LIMIT 1";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, id);
 
@@ -161,7 +161,7 @@ public class ProjectRepository implements ProjectRepositoryInterface {
 
     @Override
     public Project addClientProject(String clientId, String projectId) throws SQLException {
-        String query = "UPDATE Projects SET clientId = ? WHERE id = ?";
+        String query = "UPDATE Projects SET clientId = ? WHERE id = ?::uuid";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, clientId);
             ps.setString(2, projectId);
@@ -177,7 +177,7 @@ public class ProjectRepository implements ProjectRepositoryInterface {
 
     @Override
     public Project updateStatus(String projectId, ProjectStatus status) throws SQLException{
-        String query = "UPDATE Projects SET status = ? WHERE id = ?";
+        String query = "UPDATE Projects SET status = ? WHERE id = ?::uuid";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setObject(1, status);
             ps.setString(2, projectId);
@@ -191,5 +191,20 @@ public class ProjectRepository implements ProjectRepositoryInterface {
         }
     }
 
+    @Override
+    public Project updateTotalCost(String projectId, double totalCost) throws SQLException {
+        String query = "UPDATE Projects SET totalCost = ? WHERE id = ?::uuid";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setDouble(1, totalCost);
+            ps.setString(2, projectId);
+
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Failed to update project total cost, no rows affected.");
+            }
+
+            return getProjectById(projectId);
+        }
+    }
 
 }

@@ -88,4 +88,13 @@ public class ProjectService implements ProjectServiceInterface {
             return projectRepository.updateStatus(projectId, status);
         }
     }
+
+    @Override
+    public Project updateTotalCost(String projectId, double totalCost) throws SQLException {
+        if (projectRepository.getProjectById(projectId) == null) {
+            return null;
+        } else {
+            return projectRepository.updateTotalCost(projectId, totalCost);
+        }
+    }
 }
