@@ -18,8 +18,7 @@ Here's an overview of the project structure for **Kostr**:
 - **models**: Defines the models representing clients, projects, quotes, materials, components, and workforce.
 - **repositories**: Contains repository classes for database operations.
 - **services**: Business logic layer for managing core functionalities such as projects, clients, and materials.
-- **ui**: Contains the `ConsoleUI` class, which manages user interactions through a console-based interface.
-    - `ConsoleUI`: The main console interface for interacting with projects, clients, and components.
+- **ui**: Contains the `ConsoleUI`, `ClientsMenu`, `ComponentsMenu` and `ProjectsMenu` classes, which manages user interactions through a console-based interface.
 - **utils**: Utility classes that handle additional helper functions and validations.
 - **resources**: Stores application properties and SQL scripts.
     - `app.properties`: Contains the application's configuration settings such as database details.
