@@ -186,7 +186,7 @@ public class ProjectRepository implements ProjectRepositoryInterface {
     public Project updateStatus(String projectId, ProjectStatus status) throws SQLException{
         String query = "UPDATE Projects SET status = ? WHERE id = ?::uuid";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setObject(1, status);
+            ps.setObject(1, status, java.sql.Types.OTHER);
             ps.setString(2, projectId);
 
             int affectedRows = ps.executeUpdate();

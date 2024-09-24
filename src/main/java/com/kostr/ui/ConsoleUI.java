@@ -7,10 +7,12 @@ import main.java.com.kostr.models.Client;
 import main.java.com.kostr.models.Component;
 import main.java.com.kostr.models.Workforce;
 import main.java.com.kostr.models.enums.ComponentType;
+import main.java.com.kostr.models.enums.ProjectStatus;
 import main.java.com.kostr.repositories.*;
 import main.java.com.kostr.repositories.interfaces.ProjectRepositoryInterface;
 import main.java.com.kostr.services.*;
 import main.java.com.kostr.utils.CostCalculator;
+import main.java.com.kostr.utils.DateUtils;
 import main.java.com.kostr.utils.InputValidator;
 
 import java.sql.Connection;
@@ -173,10 +175,8 @@ public class ConsoleUI {
                                 }
                             }
 
-                            QuoteDTO quoteDTO = generateQuote();
-
                             calculateCost(projectDTO, projectController);
-
+                            saveQuote(projectDTO,projectController);
                         } else {
                             System.out.println(RED + "Project creation failed." + RESET);
                         }
@@ -632,14 +632,44 @@ public class ConsoleUI {
         return workforceDTO;
     }
 
-    private QuoteDTO generateQuote() throws SQLException {
+
+    private void saveQuote(ProjectDTO projectDTO, ProjectController projectController) throws SQLException {
         QuoteRepository quoteRepository = new QuoteRepository(connection);
         QuoteService quoteService = new QuoteService(quoteRepository);
         QuoteController quoteController = new QuoteController(quoteService);
 
-        QuoteDTO quoteDTO = new QuoteDTO(null, UUID.fromString(getProjectId()), getEstimatedCost(), null, null, false);
+        System.out.println(YELLOW + "+ Save Quote +" + RESET);
 
-        return quoteController.createQuote(quoteDTO);
+        String issueDate;
+        System.out.println(BLUE + "+ " + RESET + "Enter Issue Date (yyyy-MM-dd):");
+        do {
+            issueDate = session.getScanner().nextLine();
+            if (!DateUtils.handleDate(issueDate)) {
+                System.out.println(RED + "Invalid date format. Please try again." + RESET);
+            }
+        } while (!DateUtils.handleDate(issueDate));
+
+        String validityDate;
+        System.out.println(BLUE + "+ " + RESET + "Enter Validity Date (yyyy-MM-dd):");
+        do {
+            validityDate = session.getScanner().nextLine();
+            if (!DateUtils.handleDate(validityDate)) {
+                System.out.println(RED + "Invalid date format. Please try again." + RESET);
+            }
+        } while (!DateUtils.handleDate(validityDate));
+
+        QuoteDTO quoteDTO = new QuoteDTO(null, UUID.fromString(getProjectId()), getEstimatedCost(), DateUtils.fromDateString(issueDate), DateUtils.fromDateString(validityDate), false);
+
+        System.out.println(YELLOW +"+ "+ RESET +"Do you want to save the quote? (yes/no): ");
+        String saveQuote = session.getScanner().nextLine();
+
+        if (saveQuote.equalsIgnoreCase("yes")) {
+            quoteController.createQuote(quoteDTO);
+            System.out.println(YELLOW + "Quote saved successfully." + RESET);
+        } else {
+            projectController.updateProjectStatus(projectDTO.getId().toString(), ProjectStatus.CANCELLED);
+            System.out.println(RED + "Quote not saved." + RESET);
+        }
     }
 
     private void calculateCost(ProjectDTO project, ProjectController projectController) throws SQLException {

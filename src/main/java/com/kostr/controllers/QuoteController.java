@@ -18,19 +18,15 @@ public class QuoteController {
         this.quoteService = quoteService;
     }
 
-    public QuoteDTO createQuote(QuoteDTO quoteDTO) throws SQLException {
+    public void  createQuote(QuoteDTO quoteDTO) throws SQLException {
         if (quoteDTO == null) {
             System.out.println(RED + "QuoteDTO is null" + RESET);
-            return null;
         }
 
         try {
             Quote newQuote = quoteService.addQuote(quoteDTO);
             if (newQuote != null) {
                 System.out.println(YELLOW + "Quote created successfully" + RESET);
-                return QuoteDTO.modelToDTO(newQuote);
-            } else {
-                return null;
             }
         } catch (SQLException e) {
             System.out.println(RED + "Error creating quote" + RESET);

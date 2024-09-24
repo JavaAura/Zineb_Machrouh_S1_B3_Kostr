@@ -3,30 +3,28 @@ package main.java.com.kostr.utils;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Optional;
 
 public class DateUtils {
 
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public static boolean handleDate(String date) {
-        return fromDateString(date)
-                .filter(parsedDate -> !parsedDate.isAfter(LocalDate.now()))
-                .isPresent();
+        LocalDate parsedDate = fromDateString(date);
+        return parsedDate != null && !parsedDate.isAfter(LocalDate.now());
     }
 
-    public static Optional<String> toDateString(LocalDate date) {
+    public static String toDateString(LocalDate date) {
         if (date == null) {
-            return Optional.empty();
+            return null;
         }
-        return Optional.of(date.format(formatter));
+        return date.format(formatter);
     }
 
-    public static Optional<LocalDate> fromDateString(String date) {
+    public static LocalDate fromDateString(String date) {
         try {
-            return Optional.of(LocalDate.parse(date, formatter));
+            return LocalDate.parse(date, formatter);
         } catch (DateTimeParseException e) {
-            return Optional.empty();
+            return null;
         }
     }
 }

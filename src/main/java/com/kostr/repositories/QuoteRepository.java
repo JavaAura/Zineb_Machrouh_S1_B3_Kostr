@@ -31,10 +31,12 @@ public class QuoteRepository implements QuoteRepositoryInterface {
 
     @Override
     public Quote addQuote(Quote quote) throws SQLException {
-        String query = "INSERT INTO Quotes (projectId, estimatedCost) VALUES (?::uuid, ?)";
+        String query = "INSERT INTO Quotes (projectId, estimatedCost, issueDate, validityDate) VALUES (?::uuid, ?, ? , ?)";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, quote.getProjectId().toString());
             ps.setDouble(2, quote.getEstimatedCost());
+            ps.setObject(3, quote.getIssueDate(), java.sql.Types.DATE);
+            ps.setObject(4, quote.getValidityDate(), java.sql.Types.DATE);
 
             int affectedRows = ps.executeUpdate();
             if (affectedRows == 0) {
