@@ -35,21 +35,6 @@ public class ClientController {
         }
     }
 
-    public void deleteClient(String id) throws SQLException {
-        if (id == null || id.isEmpty()) {
-            System.out.println(RED + "Client ID is null or empty" + RESET);
-            return;
-        }
-
-        try {
-            clientService.removeClient(id);
-            System.out.println(YELLOW + "Client deleted successfully" + RESET);
-        } catch (SQLException e) {
-            System.out.println(RED + "Error deleting client" + RESET);
-            throw e;
-        }
-    }
-
     public ClientDTO updateClient(ClientDTO clientDTO) throws SQLException {
         if (clientDTO == null || clientDTO.getId() == null) {
             System.out.println(RED + "Invalid ClientDTO provided for update" + RESET);

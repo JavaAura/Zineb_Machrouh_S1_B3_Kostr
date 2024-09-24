@@ -50,7 +50,7 @@ public class QuoteRepository implements QuoteRepositoryInterface {
 
     @Override
     public Quote getQuoteByProject(String projectId) throws SQLException {
-        String query = "SELECT DISTINCT * FROM Quotes WHERE projectId = ?";
+        String query = "SELECT DISTINCT * FROM Quotes WHERE projectId = ?::uuid";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, projectId);
 
@@ -79,7 +79,7 @@ public class QuoteRepository implements QuoteRepositoryInterface {
 
     @Override
     public void updateStatus(String id, boolean status) throws SQLException {
-        String query = "UPDATE Quotes SET isAccepted = ? WHERE id = ?";
+        String query = "UPDATE Quotes SET isAccepted = ? WHERE id = ?::uuid";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setBoolean(1, status);
             ps.setString(2, id);
@@ -89,7 +89,7 @@ public class QuoteRepository implements QuoteRepositoryInterface {
 
     @Override
     public Quote getQuote(String id) throws SQLException {
-        String query = "SELECT DISTINCT * FROM Quotes WHERE id = ?";
+        String query = "SELECT DISTINCT * FROM Quotes WHERE id = ?::uuid";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, id);
 

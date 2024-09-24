@@ -159,7 +159,6 @@ public class ProjectController {
         }
 
         try {
-            System.out.println(BLUE + "Updating status for project with ID: " + projectId + RESET);
             Project updatedProject = projectService.updateStatus(projectId, status);
             if (updatedProject != null) {
                 return ProjectDTO.modelToDTO(updatedProject);

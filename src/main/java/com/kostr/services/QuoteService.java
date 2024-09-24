@@ -33,40 +33,17 @@ public class QuoteService implements QuoteServiceInterface {
     @Override
     public Quote getQuoteByProject(String projectId) throws SQLException {
         if (projectId.isEmpty()) {
-            logger.severe("Project ID field must be filled in");
             return null;
         }
 
-        Quote quote = quoteRepository.getQuoteByProject(projectId);
-        if (quote == null) {
-            logger.severe("Quote not found for the provided project ID: " + projectId);
-        } else {
-            logger.info("Quote found successfully.");
-        }
-
-        return quote;
+        return quoteRepository.getQuoteByProject(projectId);
     }
 
-    @Override
-    public void updateDates(String id, String issueDate, String validityDate) throws SQLException {
-        if (id == null || id.isEmpty()) {
-            logger.severe("ID field must be filled in");
-            return;
-        }
 
-        Quote quote = quoteRepository.getQuote(id);
-        if (quote == null) {
-            logger.severe("Quote not found for the provided ID: " + id);
-        } else {
-            quoteRepository.updateDates(id, issueDate, validityDate);
-            logger.info("Quote dates updated successfully.");
-        }
-    }
 
     @Override
     public void updateStatus(String id, boolean status) throws SQLException {
         if (id == null || id.isEmpty()) {
-            logger.severe("ID field must be filled in");
             return;
         }
 
@@ -75,7 +52,6 @@ public class QuoteService implements QuoteServiceInterface {
             logger.severe("Quote not found for the provided ID: " + id);
         } else {
             quoteRepository.updateStatus(id, status);
-            logger.info("Quote status updated successfully.");
         }
     }
 
@@ -86,13 +62,7 @@ public class QuoteService implements QuoteServiceInterface {
             return null;
         }
 
-        Quote quote = quoteRepository.getQuote(id);
-        if (quote == null) {
-            logger.severe("Quote not found for the provided ID: " + id);
-        } else {
-            logger.info("Quote found successfully.");
-        }
 
-        return quote;
+        return quoteRepository.getQuote(id);
     }
 }

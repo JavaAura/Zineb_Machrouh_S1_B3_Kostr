@@ -129,6 +129,10 @@ public class ConsoleUI {
         WorkforceService workforceService = new WorkforceService(workforceRepository);
         WorkforceController workforceController = new WorkforceController(workforceService);
 
+        QuoteRepository quoteRepository = new QuoteRepository(connection);
+        QuoteService quoteService = new QuoteService(quoteRepository);
+        QuoteController quoteController = new QuoteController(quoteService);
+
         switch (option){
             case 1:
                 System.out.println(YELLOW + "+ View All Projects +" + RESET);
@@ -188,6 +192,36 @@ public class ConsoleUI {
                 }
 
             case 4:
+                System.out.println(YELLOW + "+ Accept/Decline Quote +" + RESET);
+
+                String projectId;
+                System.out.println(BLUE + "+ " + RESET + "Enter Project ID: ");
+                do {
+                    projectId = session.getScanner().nextLine();
+                    if (!inputValidator.isUUID(projectId)) {
+                        System.out.println(RED + "Invalid input! Please enter a valid project ID." + RESET);
+                    }
+                } while (!inputValidator.isUUID(projectId));
+
+                QuoteDTO quoteDTO = quoteController.getQuoteByProject(projectId);
+
+                if (quoteDTO.isAccepted()){
+                    System.out.println(BLUE + "+ " + RESET + "Quote already accepted! Do you want to decline it? (yes/no): ");
+                    String declineQuote = session.getScanner().nextLine();
+                    if (declineQuote.equalsIgnoreCase("yes")) {
+                        quoteController.updateQuoteStatus(quoteDTO.getId().toString(), false);
+                    }else {
+                        System.out.println(RED + "Quote already accepted." + RESET);
+                    }
+                }else{
+                    System.out.println(BLUE + "+ " + RESET + "Do you want to accept the quote? (yes/no): ");
+                    String acceptQuote = session.getScanner().nextLine();
+                    if (acceptQuote.equalsIgnoreCase("yes")) {
+                        quoteController.updateQuoteStatus(quoteDTO.getId().toString(), true);
+                    }else {
+                        System.out.println(RED + "Quote not accepted." + RESET);
+                    }
+                }
 
                 break;
         }
