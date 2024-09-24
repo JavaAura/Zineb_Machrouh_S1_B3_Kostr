@@ -111,7 +111,7 @@ public class ProjectRepository implements ProjectRepositoryInterface {
 
     @Override
     public ArrayList<Project> getClientProjects(String clientId) throws SQLException {
-        String query = "SELECT * FROM Projects WHERE clientId = ?";
+        String query = "SELECT * FROM Projects WHERE clientId = ?::uuid";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, clientId);
 

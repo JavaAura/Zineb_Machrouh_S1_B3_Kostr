@@ -74,7 +74,7 @@ public class ClientDTO {
 
     @Override
     public String toString() {
-        return "ClientDTO{" +
+        return "Client : {" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
