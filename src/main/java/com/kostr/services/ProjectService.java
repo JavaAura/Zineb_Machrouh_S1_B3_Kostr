@@ -24,29 +24,6 @@ public class ProjectService implements ProjectServiceInterface {
         return projectRepository.addProject(projectModel);
     }
 
-    @Override
-    public void removeProject(String id) throws SQLException {
-        projectRepository.removeProject(id);
-    }
-
-    @Override
-    public Project updateProject(ProjectDTO project) throws SQLException {
-        if (projectRepository.getProjectById(project.getId().toString()) == null) {
-            return null;
-        } else {
-            Project projectModel = project.dtoToModel();
-            return projectRepository.updateProject(projectModel);
-        }
-    }
-
-    @Override
-    public Project getProjectById(String id) throws SQLException {
-        if (id.isEmpty()) {
-            return null;
-        } else {
-            return projectRepository.getProjectById(id);
-        }
-    }
 
     @Override
     public ArrayList<Project> getClientProjects(String clientId) throws SQLException {
@@ -71,14 +48,7 @@ public class ProjectService implements ProjectServiceInterface {
         }
     }
 
-    @Override
-    public Project addClientProject(String clientId, String projectId) throws SQLException {
-        if (clientId.isEmpty() || projectId.isEmpty()) {
-            return null;
-        } else {
-            return projectRepository.addClientProject(clientId, projectId);
-        }
-    }
+
 
     @Override
     public Project updateStatus(String projectId, ProjectStatus status) throws SQLException {

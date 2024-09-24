@@ -9,8 +9,5 @@ import java.util.ArrayList;
 
 public interface MaterialRepositoryInterface {
     public Material addMaterial(Material material) throws SQLException;
-    public void removeMaterial(String id) throws SQLException;
-    public Material updateMaterial(Material material) throws SQLException;
     public Material getMaterialById(String id) throws SQLException;
-    public ArrayList<Material> getMaterialsByProject(String projectId) throws SQLException;
 }

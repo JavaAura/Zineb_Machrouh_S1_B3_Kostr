@@ -37,61 +37,6 @@ public class ProjectController {
         }
     }
 
-    public void deleteProject(String id) throws SQLException {
-        if (id == null || id.isEmpty()) {
-            System.out.println(RED + "Project ID is null or empty" + RESET);
-            return;
-        }
-
-        try {
-            projectService.removeProject(id);
-            System.out.println(YELLOW + "Project deleted successfully" + RESET);
-        } catch (SQLException e) {
-            System.out.println(RED + "Error deleting project" + RESET);
-            throw e;
-        }
-    }
-
-    public ProjectDTO updateProject(ProjectDTO projectDTO) throws SQLException {
-        if (projectDTO == null || projectDTO.getId() == null) {
-            System.out.println(RED + "Invalid ProjectDTO provided for update" + RESET);
-            return null;
-        }
-
-        try {
-            Project updatedProject = projectService.updateProject(projectDTO);
-            if (updatedProject != null) {
-                System.out.println(YELLOW + "Project updated successfully" + RESET);
-                return ProjectDTO.modelToDTO(updatedProject);
-            } else {
-                System.out.println(RED + "Project not found or update failed" + RESET);
-                return null;
-            }
-        } catch (SQLException e) {
-            System.out.println(RED + "Error updating project" + RESET);
-            throw e;
-        }
-    }
-
-    public ProjectDTO getProjectById(String id) throws SQLException {
-        if (id == null || id.isEmpty()) {
-            System.out.println(RED + "Project ID is null or empty" + RESET);
-            return null;
-        }
-
-        try {
-            Project project = projectService.getProjectById(id);
-            if (project != null) {
-                return ProjectDTO.modelToDTO(project);
-            } else {
-                System.out.println(RED + "Project not found" + RESET);
-                return null;
-            }
-        } catch (SQLException e) {
-            System.out.println(RED + "Error fetching project" + RESET);
-            throw e;
-        }
-    }
 
     public List<ProjectDTO> getClientProjects(String clientId) throws SQLException {
         if (clientId == null || clientId.isEmpty()) {

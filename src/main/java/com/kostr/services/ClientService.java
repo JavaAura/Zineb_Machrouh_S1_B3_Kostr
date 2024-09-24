@@ -29,41 +29,7 @@ public class ClientService implements ClientServiceInterface {
         }
     }
 
-    @Override
-    public void removeClient(String id) throws SQLException {
-        if (id.isEmpty()) {
-            logger.severe("ID field must be filled in");
-        }else{
-            if (clientRepository.getClientById(id) == null) {
-                logger.severe("Client not found");
-            }else{
-                clientRepository.removeClient(id);
-                logger.info("Client removed successfully");
-            }
-        }
-    }
 
-    @Override
-    public Client updateClient(ClientDTO client) throws SQLException {
-        if (client.getName().isEmpty() || client.getAddress().isEmpty() || client.getEmail().isEmpty() || client.getPhoneNumber().isEmpty()) {
-            logger.severe("All fields must be filled in");
-            return null;
-        }else{
-            logger.info("Client updated successfully");
-            Client clientModel = client.dtoToModel();
-            return clientRepository.updateClient(clientModel);
-        }
-    }
-
-    @Override
-    public Client getClientById(String id) throws SQLException {
-        if (id.isEmpty()) {
-            logger.severe("ID field must be filled in");
-            return null;
-        }else{
-            return clientRepository.getClientById(id);
-        }
-    }
 
     @Override
     public ArrayList<Client> getAllClients() throws SQLException {

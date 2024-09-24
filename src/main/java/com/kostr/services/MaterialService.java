@@ -27,49 +27,4 @@ public class MaterialService implements MaterialServiceInterface {
         return materialRepository.addMaterial(materialModel);
     }
 
-    @Override
-    public void removeMaterial(String id) throws SQLException {
-        if (id.isEmpty()) {
-            logger.severe("ID field must be filled in");
-        } else {
-            if (materialRepository.getMaterialById(id) == null) {
-                logger.severe("Material not found");
-            } else {
-                materialRepository.removeMaterial(id);
-                logger.info("Material removed successfully");
-            }
-        }
-    }
-
-    @Override
-    public Material updateMaterial(MaterialDTO material) throws SQLException {
-        if (materialRepository.getMaterialById(material.getId().toString()) == null) {
-            logger.severe("Material not found");
-            return null;
-        } else {
-            Material materialModel = material.dtoToModel();
-            logger.info("Material updated successfully");
-            return materialRepository.updateMaterial(materialModel);
-        }
-    }
-
-    @Override
-    public Material getMaterialById(String id) throws SQLException {
-        if (id.isEmpty()) {
-            logger.severe("ID field must be filled in");
-            return null;
-        } else {
-            return materialRepository.getMaterialById(id);
-        }
-    }
-
-    @Override
-    public ArrayList<Material> getMaterialsByProject(String projectId) throws SQLException {
-        if (projectId.isEmpty()) {
-            logger.severe("Project ID field must be filled in");
-            return null;
-        } else {
-            return materialRepository.getMaterialsByProject(projectId);
-        }
-    }
 }

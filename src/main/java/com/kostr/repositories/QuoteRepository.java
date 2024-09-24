@@ -64,18 +64,6 @@ public class QuoteRepository implements QuoteRepositoryInterface {
         }
     }
 
-    @Override
-    public void updateDates(String id, String issueDate, String validityDate) throws SQLException {
-        String query = "UPDATE Quotes SET issueDate = ?, validityDate = ? WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setObject(1, issueDate);
-            ps.setObject(2, validityDate);
-            ps.setString(3, id);
-
-            ps.executeUpdate();
-
-        }
-    }
 
     @Override
     public void updateStatus(String id, boolean status) throws SQLException {

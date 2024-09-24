@@ -52,38 +52,6 @@ public class WorkforceRepository implements WorkforceRepositoryInterface {
         }
     }
 
-    @Override
-    public void removeWorkforce(String id) throws SQLException {
-        String query = "DELETE FROM Workforce WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(1, id);
-            ps.executeUpdate();
-        }
-    }
-
-    @Override
-    public Workforce updateWorkforce(Workforce workforce) throws SQLException {
-        String query = "UPDATE Workforce SET name = ?, type = ?, vatRate = ?, totalPrice = ?, projectId = ?, hourlyRate = ?, hoursWorked = ?, workerProductivity = ? WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(1, workforce.getName());
-            ps.setString(2, workforce.getType().toString());
-            ps.setDouble(3, workforce.getVatRate());
-            ps.setDouble(4, workforce.getTotalPrice());
-            ps.setString(5, workforce.getProjectId().toString());
-            ps.setDouble(6, workforce.getHourlyRate());
-            ps.setDouble(7, workforce.getHoursWorked());
-            ps.setDouble(8, workforce.getWorkerProductivity());
-            ps.setString(9, workforce.getId().toString());
-
-            int affectedRows = ps.executeUpdate();
-
-            if (affectedRows == 0) {
-                throw new SQLException("Failed to update workforce, no rows affected.");
-            }
-
-            return getWorkforceModel(workforce, ps);
-        }
-    }
 
     @Override
     public Workforce getWorkforceById(String id) throws SQLException {
@@ -101,19 +69,4 @@ public class WorkforceRepository implements WorkforceRepositoryInterface {
         }
     }
 
-    @Override
-    public ArrayList<Workforce> getWorkforcesByProject(String projectId) throws SQLException {
-        String query = "SELECT DISTINCT * FROM Workforce WHERE projectId = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(1, projectId);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                ArrayList<Workforce> workforces = new ArrayList<>();
-                while (rs.next()) {
-                    workforces.add(new Workforce((UUID) rs.getObject("id"), rs.getString("name"), UUID.fromString(rs.getString("type")), rs.getDouble("vatRate"), rs.getDouble("totalPrice"), (UUID) rs.getObject("projectId"), rs.getDouble("hourlyRate"), rs.getDouble("hoursWorked"), rs.getDouble("workerProductivity")));
-                }
-                return workforces;
-            }
-        }
-    }
 }

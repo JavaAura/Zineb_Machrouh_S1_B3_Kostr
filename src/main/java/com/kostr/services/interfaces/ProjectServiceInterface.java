@@ -9,13 +9,9 @@ import java.util.ArrayList;
 
 public interface ProjectServiceInterface {
     public Project addProject(ProjectDTO project) throws SQLException;
-    public void removeProject(String id) throws SQLException;
-    public Project updateProject(ProjectDTO project) throws SQLException;
-    public Project getProjectById(String id) throws SQLException;
     public ArrayList<Project> getClientProjects(String clientId) throws SQLException;
     public ArrayList<Project> getProjects() throws SQLException;
     public Integer getClientProjectsCount(String clientId) throws SQLException;
-    public Project addClientProject(String clientId, String projectId) throws SQLException;
     public Project updateStatus(String projectId, ProjectStatus status) throws SQLException;
     public Project updateTotalCost(String projectId, double totalCost) throws SQLException;
 }

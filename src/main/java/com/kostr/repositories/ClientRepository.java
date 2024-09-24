@@ -39,36 +39,6 @@ public class ClientRepository implements ClientRepositoryInterface {
     }
 
 
-    @Override
-    public void removeClient(String id) throws SQLException {
-        String query = "DELETE FROM Clients WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(1, id);
-            ps.executeUpdate();
-        }
-    }
-
-    @Override
-    public Client updateClient(Client client) throws SQLException {
-        String query = "UPDATE Clients SET name = ?, address = ?, email = ?, phoneNumber = ?, isProfessional = ? WHERE id = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(1, client.getName());
-            ps.setString(2, client.getAddress());
-            ps.setString(3, client.getEmail());
-            ps.setString(4, client.getPhoneNumber());
-            ps.setBoolean(5, client.isProfessional());
-            ps.setString(6, client.getId().toString());
-
-
-            int affectedRows = ps.executeUpdate();
-
-            if (affectedRows == 0) {
-                throw new SQLException("Failed to update client, no rows affected.");
-            }
-            return getClientModel(client, ps);
-        }
-    }
-
     private Client getClientModel(Client client, PreparedStatement ps) throws SQLException {
         try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
             if (generatedKeys.next()) {

@@ -8,8 +8,6 @@ import java.util.ArrayList;
 
 public interface ClientRepositoryInterface {
     public Client addClient(Client client) throws SQLException;
-    public void removeClient(String id) throws SQLException;
-    public Client updateClient(Client client) throws SQLException;
     public Client getClientById(String id) throws SQLException;
     public ArrayList<Client> getAllClients() throws SQLException;
     public Client getClientByEMail(String email) throws SQLException;
