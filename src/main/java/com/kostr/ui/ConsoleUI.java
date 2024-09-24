@@ -174,6 +174,9 @@ public class ConsoleUI {
                             }
 
                             QuoteDTO quoteDTO = generateQuote();
+
+                            calculateCost(projectDTO, projectController);
+
                         } else {
                             System.out.println(RED + "Project creation failed." + RESET);
                         }
@@ -639,7 +642,80 @@ public class ConsoleUI {
         return quoteController.createQuote(quoteDTO);
     }
 
-    private void calculateCost(){
+    private void calculateCost(ProjectDTO project, ProjectController projectController) throws SQLException {
+        CostCalculator costCalculator = new CostCalculator();
 
+        System.out.println(YELLOW + "+ Calculate Costs +" + RESET);
+        double materialsCost = 0;
+        double materialsCostVAT = 0;
+
+        double workforceCost = 0;
+        double workforceCostVAT = 0;
+
+        double totalCost = 0;
+        double totalCostMargin = 0;
+
+        System.out.println(BLUE + "+" + RESET +"Do you wanna apply vat? (yes/no): ");
+        String applyVat = session.getScanner().nextLine();
+
+        System.out.println(BLUE + "+" + RESET +"Do you wanna apply the profit margin? (yes/no): ");
+        String applyProfitMargin = session.getScanner().nextLine();
+
+        System.out.println(YELLOW + "Calculating costs..." + RESET);
+
+        System.out.println(YELLOW + "+ Project Details +" + RESET);
+        System.out.println(BLUE + "+ " + RESET + "Project Name: " + project.getName());
+        System.out.println(BLUE + "+ " + RESET + "Project Profit Margin: " + project.getProfitMargin());
+        System.out.println(BLUE + "+ " + RESET + "Project Surface Area: " + project.getSurfaceArea());
+        System.out.println(BLUE + "+ " + RESET + "Project Type: " + project.getType());
+
+        System.out.println(YELLOW + "+ Cost Detail +" + RESET);
+        System.out.println(BLUE + "1. " + RESET + "Materials:");
+        components.stream().filter(componentDTO -> componentDTO instanceof MaterialDTO).forEach(System.out::println);
+        materialsCost += components.stream().filter(componentDTO -> componentDTO instanceof MaterialDTO).mapToDouble(ComponentDTO::getTotalPrice).sum();
+        System.out.println(BLUE + "Total Materials Cost: " + RESET + materialsCost + "$");
+
+        if (applyVat.equalsIgnoreCase("yes")) {
+            materialsCostVAT += components.stream().filter(componentDTO -> componentDTO instanceof MaterialDTO).mapToDouble(componentDTO -> costCalculator.totalCostWithVAT(componentDTO.getTotalPrice(), componentDTO.getVatRate())).sum();
+            System.out.println(BLUE + "Total Materials Cost with VAT: " + RESET + materialsCostVAT + "$");
+        }
+
+        System.out.println(BLUE + "2. " + RESET + "Workforce:");
+        components.stream().filter(componentDTO -> componentDTO instanceof WorkforceDTO).forEach(System.out::println);
+        workforceCost += components.stream().filter(componentDTO -> componentDTO instanceof WorkforceDTO).mapToDouble(ComponentDTO::getTotalPrice).sum();
+        System.out.println(BLUE + "Total Workforce Cost: " + RESET + workforceCost + "$");
+
+        if (applyVat.equalsIgnoreCase("yes")) {
+            workforceCostVAT += components.stream().filter(componentDTO -> componentDTO instanceof WorkforceDTO).mapToDouble(componentDTO -> costCalculator.totalCostWithVAT(componentDTO.getTotalPrice(), componentDTO.getVatRate())).sum();
+            System.out.println(BLUE + "Total Workforce Cost with VAT: " + RESET + workforceCostVAT + "$");
+        }
+
+        if (applyVat.equalsIgnoreCase("yes")) {
+            totalCost = materialsCostVAT + workforceCostVAT;
+            System.out.println(BLUE + "3. " + RESET + "Total Cost Without Margin: " + totalCost + "$");
+        }else{
+            totalCost = materialsCost + workforceCost;
+            System.out.println(BLUE + "3. " + RESET + "Total Cost Without Margin: " + totalCost + "$");
+        }
+
+        if (applyProfitMargin.equalsIgnoreCase("yes")) {
+            double profitMargin = project.getProfitMargin();
+            totalCostMargin = costCalculator.totalCostMargin(totalCost, profitMargin);
+            System.out.println(BLUE + "4. " + RESET + "Profit Margin: " + totalCostMargin);
+        }
+
+        double totalCostWithMargin = totalCost + totalCostMargin;
+        System.out.println(BLUE + "5. " + RESET + "Total Cost: " + totalCostWithMargin + "$");
+
+        int projects = projectController.getClientProjectsCount(session.getId().toString());
+        boolean isProfessional = session.isProfesional();
+
+        double totalCostWithDiscount = costCalculator.totalCostWithDiscount((int) totalCostWithMargin, projects, isProfessional);
+        System.out.println(BLUE + "6. " + RESET + "Total Cost with Discount: " + totalCostWithDiscount + "$");
+
+        projectController.updateTotalCost(project.getId().toString(), totalCostWithDiscount);
     }
+
+
+
 }

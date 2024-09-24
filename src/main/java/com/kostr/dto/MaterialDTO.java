@@ -56,9 +56,9 @@ public class MaterialDTO extends ComponentDTO{
     @Override
     public String toString() {
         return super.toString() +
-                ", unitCost=" + unitCost +
+                ", unitCost=" + unitCost + "$"+
                 ", quantity=" + quantity +
-                ", transportCost=" + transportCost +
+                ", transportCost=" + transportCost + "$"+
                 ", qualityCoefficient=" + qualityCoefficient +
                 '}';
     }

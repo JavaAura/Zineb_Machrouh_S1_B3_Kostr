@@ -75,8 +75,8 @@ public class ComponentDTO {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", type=" + type +
-                ", vatRate=" + vatRate +
-                ", totalPrice=" + totalPrice +
+                ", vatRate=" + vatRate + "%" +
+                ", totalPrice=" + totalPrice +"$"+
                 ", projectId=" + projectId +
                 '}';
     }

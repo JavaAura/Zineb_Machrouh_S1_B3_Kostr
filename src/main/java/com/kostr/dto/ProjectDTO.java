@@ -102,9 +102,9 @@ public class ProjectDTO {
         return "Project : {" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", profitMargin=" + profitMargin +
-                ", totalCost=" + totalCost +
-                ", surfaceArea=" + surfaceArea +
+                ", profitMargin=" + profitMargin + "%"+
+                ", totalCost=" + totalCost + "$"+
+                ", surfaceArea=" + surfaceArea + "m²"+
                 ", type=" + type +
                 ", status=" + status +
                 ", clientId=" + clientId +

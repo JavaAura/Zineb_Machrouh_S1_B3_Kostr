@@ -9,40 +9,39 @@ public class CostCalculator {
         return hourlyRate * hours * productivity;
     }
 
-    public double totalCostWithoutVAT(double materialCostWithoutVAT, double workforceCostWithoutVAT) {
-        return materialCostWithoutVAT + workforceCostWithoutVAT;
-    }
 
     public double totalCostWithVAT(double price, double VAT) {
         return price *  (1 + VAT/100);
     }
 
-    public double totalCostWithMargin(double price, double margin) {
+    public double totalCostMargin(double price, double margin) {
         return price * (0 + margin/100);
     }
 
     public double totalCostWithDiscount(int price, int projects, boolean isProfessional) {
         if (isProfessional){
-            switch (projects){
-                case 3:
-                    return price * 0.90;
-                case 5:
-                    return price * 0.85;
-                case 10:
-                    return price * 0.80;
-                default:
-                    return price * 0.75;
+            if (projects == 0){
+                return price;
+            } else if (projects>= 1 && projects <= 3){
+                return price * 0.90;
+            }else if (projects > 4 && projects <= 7) {
+                return price * 0.85;
+            } else if (projects > 8 && projects <= 10) {
+                return price * 0.80;
+            }else {
+                return price * 0.75;
             }
         }else {
-            switch (projects){
-                case 3:
-                    return price * 0.98;
-                case 5:
-                    return price * 0.94;
-                case 10:
-                    return price * 0.90;
-                default:
-                    return price * 0.86;
+            if (projects == 0){
+                return price;
+            } else if (projects>= 1 && projects <= 3){
+                return price * 0.98;
+            }else if (projects > 4 && projects <= 7) {
+                return price * 0.94;
+            } else if (projects > 8 && projects <= 10) {
+                return price * 0.90;
+            }else {
+                return price * 0.86;
             }
         }
 

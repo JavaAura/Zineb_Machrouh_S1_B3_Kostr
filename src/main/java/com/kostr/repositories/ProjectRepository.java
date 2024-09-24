@@ -152,10 +152,17 @@ public class ProjectRepository implements ProjectRepositoryInterface {
 
     @Override
     public Integer getClientProjectsCount(String clientId) throws SQLException {
-        String query = "SELECT COUNT(*) FROM Projects WHERE clientId = ?";
+        String query = "SELECT COUNT(*) FROM Projects WHERE clientId = ?::uuid";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, clientId);
-            return ps.executeQuery().getInt(1);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                } else {
+                    return 0;
+                }
+            }
         }
     }
 

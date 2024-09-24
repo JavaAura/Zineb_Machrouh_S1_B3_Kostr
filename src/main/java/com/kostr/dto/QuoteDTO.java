@@ -75,7 +75,7 @@ public class QuoteDTO {
         return "QuoteDTO{" +
                 "id=" + id +
                 ", projectId=" + projectId +
-                ", estimatedCost=" + estimatedCost +
+                ", estimatedCost=" + estimatedCost + "$"+
                 ", issueDate=" + issueDate +
                 ", validityDate=" + validityDate +
                 ", isAccepted=" + isAccepted +

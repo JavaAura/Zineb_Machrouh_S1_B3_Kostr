@@ -47,8 +47,8 @@ public class WorkforceDTO extends ComponentDTO{
     @Override
     public String toString() {
         return super.toString() +
-                ", hourlyRate=" + hourlyRate +
-                ", hoursWorked=" + hoursWorked +
+                ", hourlyRate=" + hourlyRate + "$/h"+
+                ", hoursWorked=" + hoursWorked + "h" +
                 ", workerProductivity=" + workerProductivity +
                 '}';
     }
