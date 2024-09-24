@@ -86,7 +86,7 @@ public class ProjectRepository implements ProjectRepositoryInterface {
 
     @Override
     public ArrayList<Project> getProjects() throws SQLException {
-        String query = "SELECT DISTINCT * FROM Projects";
+        String query = "SELECT DISTINCT * FROM Projects LIMIT 10";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             try(ResultSet rs = ps.executeQuery()){
                 ArrayList<Project> projects = new ArrayList<>();

@@ -26,9 +26,14 @@ public class ClientController {
         }
 
         try {
-            Client client = clientService.addClient(clientDTO);
-            System.out.println(YELLOW + "Client created successfully" + RESET);
-            return ClientDTO.modelToDTO(client);
+            if (clientService.getClientByEMail(clientDTO.getEmail()) != null) {
+                System.out.println(RED + "Client with email already exists" + RESET);
+                return null;
+            }else {
+                Client client = clientService.addClient(clientDTO);
+                System.out.println(YELLOW + "Client created successfully" + RESET);
+                return ClientDTO.modelToDTO(client);
+            }
         } catch (SQLException e) {
             System.out.println(RED + "Error creating client" + RESET);
             throw e;

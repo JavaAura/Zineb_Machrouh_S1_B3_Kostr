@@ -27,8 +27,6 @@ public class WorkforceService implements WorkforceServiceInterface {
         Workforce addedWorkforce = workforceRepository.addWorkforce(workforce);
         if (addedWorkforce != null) {
             logger.info("Workforce added successfully.");
-        } else {
-            logger.severe("Failed to add workforce.");
         }
         return addedWorkforce;
     }

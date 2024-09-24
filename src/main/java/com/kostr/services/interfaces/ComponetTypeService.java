@@ -11,5 +11,5 @@ public interface ComponetTypeService {
     public void removeComponentType(String id) throws SQLException;
     public ComponentType updateComponentType(ComponentTypeDTO componentType) throws SQLException;
     public ArrayList<ComponentType> getComponentTypes() throws SQLException;
-    public ComponentType getComponentTypeById(String id) throws SQLException;
+    public ComponentType getComponentTypeByName(String name) throws SQLException;
 }

@@ -69,7 +69,7 @@ public class ClientRepository implements ClientRepositoryInterface {
 
     @Override
     public ArrayList<Client> getAllClients() throws SQLException {
-        String query = "SELECT DISTINCT * FROM Clients";
+        String query = "SELECT DISTINCT * FROM Clients ORDER BY name";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             try (ResultSet rs = ps.executeQuery()) {
                 ArrayList<Client> clients = new ArrayList<>();

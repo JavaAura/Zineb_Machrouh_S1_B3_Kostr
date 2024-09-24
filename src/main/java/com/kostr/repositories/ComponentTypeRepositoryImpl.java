@@ -94,6 +94,29 @@ public class ComponentTypeRepositoryImpl implements ComponentTypeRepository {
     }
 
     @Override
+    public ComponentType getComponentTypeByName(String name) throws SQLException {
+        String query = "SELECT * FROM ComponentTypes WHERE name = ?";
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, name);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String componentTypeString = rs.getString("type");
+
+                    main.java.com.kostr.models.enums.ComponentType componentTypeEnum = main.java.com.kostr.models.enums.ComponentType.valueOf(componentTypeString);
+
+                    return new ComponentType(
+                            UUID.fromString(rs.getString("id")),
+                            rs.getString("name"),
+                            componentTypeEnum
+                    );                } else {
+                    return null;
+                }
+            }
+        }
+    }
+
+    @Override
     public ComponentType getComponentTypeById(String id) throws SQLException {
         String query = "SELECT * FROM ComponentTypes WHERE id = ?::uuid";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
@@ -107,7 +130,7 @@ public class ComponentTypeRepositoryImpl implements ComponentTypeRepository {
 
                     return new ComponentType(
                             UUID.fromString(rs.getString("id")),
-                            rs.getString("name"),
+                            rs.getString("id"),
                             componentTypeEnum
                     );                } else {
                     return null;

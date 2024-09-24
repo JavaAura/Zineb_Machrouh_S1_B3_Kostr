@@ -18,29 +18,42 @@ import main.java.com.kostr.utils.InputValidator;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class ConsoleUI {
-    private final Connection connection;
     private static Session session = Session.getInstance();
 
     private static final Logger logger = Logger.getLogger(ConsoleUI.class.getName());
-    private final InputValidator inputValidator = new InputValidator()
-            ;
+    private final InputValidator inputValidator = new InputValidator();
     private String projectId;
     private double estimatedCost = 0;
 
     ArrayList<ComponentDTO> components = new ArrayList<>();
+
+    private final ProjectController projectController;
+    private final ClientController clientController;
+    private final MaterialController materialController;
+    private final WorkforceController workforceController;
+    private final QuoteController quoteController;
+    private final ComponentTypeController componentTypeController;
 
     public static final String RESET = "\033[0m";
     public static final String RED = "\033[0;31m";
     public static final String BLUE = "\033[0;34m";
     public static final String YELLOW = "\u001b[93m";
 
-    public ConsoleUI(Connection connection) throws SQLException {
-        this.connection = connection;
+    public ConsoleUI(ProjectController projectController, ClientController clientController, MaterialController materialController, WorkforceController workforceController, QuoteController quoteController, ComponentTypeController componentTypeController) throws SQLException {
+        this.projectController = projectController;
+        this.clientController = clientController;
+        this.materialController = materialController;
+        this.workforceController = workforceController;
+        this.quoteController = quoteController;
+        this.componentTypeController = componentTypeController;
+
         menu();
     }
 
@@ -111,25 +124,6 @@ public class ConsoleUI {
 
 
     public void projectsMenu(Integer option) throws SQLException {
-        ProjectRepository projectRepository = new ProjectRepository(connection);
-        ProjectService projectService = new ProjectService(projectRepository);
-        ProjectController projectController = new ProjectController(projectService);
-
-        ClientRepository clientRepository = new ClientRepository(connection);
-        ClientService clientService = new ClientService(clientRepository);
-        ClientController clientController = new ClientController(clientService);
-
-        MaterialRepository materialRepository = new MaterialRepository(connection);
-        MaterialService materialService = new MaterialService(materialRepository);
-        MaterialController materialController = new MaterialController(materialService);
-
-        WorkforceRepository workforceRepository = new WorkforceRepository(connection);
-        WorkforceService workforceService = new WorkforceService(workforceRepository);
-        WorkforceController workforceController = new WorkforceController(workforceService);
-
-        QuoteRepository quoteRepository = new QuoteRepository(connection);
-        QuoteService quoteService = new QuoteService(quoteRepository);
-        QuoteController quoteController = new QuoteController(quoteService);
 
         switch (option){
             case 1:
@@ -186,6 +180,7 @@ public class ConsoleUI {
                     e.printStackTrace();
                 }
 
+                break;
             case 3:
                 System.out.println(YELLOW + "+ Accept/Decline Quote +" + RESET);
 
@@ -205,6 +200,7 @@ public class ConsoleUI {
                     String declineQuote = session.getScanner().nextLine();
                     if (declineQuote.equalsIgnoreCase("yes")) {
                         quoteController.updateQuoteStatus(quoteDTO.getId().toString(), false);
+
                     }else {
                         System.out.println(RED + "Quote already accepted." + RESET);
                     }
@@ -223,13 +219,6 @@ public class ConsoleUI {
     }
 
     public void clientsMenu(Integer option) throws SQLException {
-        ClientRepository clientRepository = new ClientRepository(connection);
-        ClientService clientService = new ClientService(clientRepository);
-        ClientController clientController = new ClientController(clientService);
-
-        ProjectRepository projectRepository = new ProjectRepository(connection);
-        ProjectService projectService = new ProjectService(projectRepository);
-        ProjectController projectController = new ProjectController(projectService);
 
         if (option == 4) {
             System.out.println(YELLOW + "+ View All Clients +" + RESET);
@@ -252,9 +241,6 @@ public class ConsoleUI {
     }
 
     public void componentsMenu(Integer componentOption) throws SQLException {
-        ComponentTypeRepositoryImpl componentTypeRepository = new ComponentTypeRepositoryImpl(connection);
-        ComponentTypeServiceImpl componentTypeService = new ComponentTypeServiceImpl(componentTypeRepository);
-        ComponentTypeController componentTypeController = new ComponentTypeController(componentTypeService);
 
         switch (componentOption){
             case 1:
@@ -288,15 +274,15 @@ public class ConsoleUI {
                 System.out.println(BLUE + "+ Update Component Type +" + RESET);
 
                 String componentId;
-                System.out.println(BLUE + "+ " + RESET + "Enter Component ID: ");
+                System.out.println(BLUE + "+ " + RESET + "Enter Component Name: ");
                 do {
                     componentId = session.getScanner().nextLine();
                     if (!inputValidator.isUUID(componentId)) {
-                        System.out.println(RED + "Invalid input! Please enter a valid component ID." + RESET);
+                        System.out.println(RED + "Invalid input! Please enter a valid component Name." + RESET);
                     }
                 } while (!inputValidator.isUUID(componentId));
 
-                ComponentTypeDTO componentTypeDTO2 = componentTypeController.getComponentTypeById(componentId);
+                ComponentTypeDTO componentTypeDTO2 = componentTypeController.getComponentTypeByName(componentId);
 
                 String componentName1;
                 System.out.println(BLUE + "+ " + RESET + "Enter Component Name (or press Enter to keep the existing value): ");
@@ -499,9 +485,6 @@ public class ConsoleUI {
     }
 
     private MaterialDTO addMaterial() throws SQLException {
-        ComponentTypeRepositoryImpl componentTypeRepository = new ComponentTypeRepositoryImpl(connection);
-        ComponentTypeServiceImpl componentTypeService = new ComponentTypeServiceImpl(componentTypeRepository);
-        ComponentTypeController componentTypeController = new ComponentTypeController(componentTypeService);
 
         String materialName;
         System.out.println(BLUE + "+ " + RESET + "Enter Material Name: ");
@@ -514,15 +497,27 @@ public class ConsoleUI {
 
         String componentType;
         System.out.println(BLUE + "+ All Material Types +" + RESET);
-        componentTypeController.getAllComponentTypes().stream().filter(componentTypeDTO -> componentTypeDTO.getType().equals(ComponentType.MATERIALS)).forEach(System.out::println);
-        System.out.println(BLUE + "+ " + RESET + "Enter Component Type Id: ");
+        List<ComponentTypeDTO> materialTypes = componentTypeController.getAllComponentTypes().stream()
+                .filter(componentTypeDTO -> componentTypeDTO.getType().equals(ComponentType.MATERIALS))
+                .collect(Collectors.toList());
 
+        materialTypes.forEach(System.out::println);
+
+        System.out.println(BLUE + "+ " + RESET + "Enter Component Type Name: ");
+
+        boolean isValidComponentType;
         do {
             componentType = session.getScanner().nextLine();
-            if (!inputValidator.isUUID(componentType)) {
-                System.out.println(RED + "Invalid input! Please enter a valid component type (only alphabetic characters)." + RESET);
+
+            String finalComponentType = componentType;
+            isValidComponentType = materialTypes.stream()
+                    .anyMatch(componentTypeDTO -> componentTypeDTO.getName().equalsIgnoreCase(finalComponentType));
+
+            if (!isValidComponentType) {
+                System.out.println(RED + "Invalid input! Please enter a valid component type name from the list." + RESET);
             }
-        } while (!inputValidator.isUUID(componentType));
+
+        } while (!isValidComponentType);
 
         double vatRate;
         String vatRateInput;
@@ -583,7 +578,7 @@ public class ConsoleUI {
         MaterialDTO materialDTO = new MaterialDTO(
                 null,
                 materialName,
-                UUID.fromString(componentType),
+                UUID.fromString(componentTypeController.getComponentTypeByName(componentType).getId().toString()),
                 vatRate,
                 totalPrice,
                 UUID.fromString(getProjectId()),
@@ -600,9 +595,6 @@ public class ConsoleUI {
     }
 
     private WorkforceDTO addWorkforce() throws SQLException{
-        ComponentTypeRepositoryImpl componentTypeRepository = new ComponentTypeRepositoryImpl(connection);
-        ComponentTypeServiceImpl componentTypeService = new ComponentTypeServiceImpl(componentTypeRepository);
-        ComponentTypeController componentTypeController = new ComponentTypeController(componentTypeService);
 
         String workforceName;
         System.out.println(BLUE + "+ " + RESET + "Enter Workforce Name: ");
@@ -615,15 +607,27 @@ public class ConsoleUI {
 
         String componentType;
         System.out.println(BLUE + "+ All Workforce Types +" + RESET);
-        componentTypeController.getAllComponentTypes().stream().filter(componentTypeDTO -> componentTypeDTO.getType().equals(ComponentType.WORKFORCE)).forEach(System.out::println);
-        System.out.println(BLUE + "+ " + RESET + "Enter Component Type Id: ");
+        List<ComponentTypeDTO> workforceTypes = componentTypeController.getAllComponentTypes().stream()
+                .filter(componentTypeDTO -> componentTypeDTO.getType().equals(ComponentType.WORKFORCE))
+                .collect(Collectors.toList());
 
+        workforceTypes.forEach(System.out::println);
+
+        System.out.println(BLUE + "+ " + RESET + "Enter Component Type Name: ");
+
+        boolean isValidComponentTypeName;
         do {
             componentType = session.getScanner().nextLine();
-            if (!inputValidator.isUUID(componentType)) {
-                System.out.println(RED + "Invalid input! Please enter a valid component type (only alphabetic characters)." + RESET);
+            String finalComponentType = componentType;
+            isValidComponentTypeName = inputValidator.handleString(componentType) &&
+                    workforceTypes.stream().anyMatch(componentTypeDTO -> componentTypeDTO.getName().equalsIgnoreCase(finalComponentType));
+
+            if (!isValidComponentTypeName) {
+                System.out.println(RED + "Invalid input! Please enter a valid component type name from the list." + RESET);
             }
-        } while (!inputValidator.isUUID(componentType));
+
+        } while (!isValidComponentTypeName);
+
 
         double vatRate;
         String vatRateInput;
@@ -671,7 +675,7 @@ public class ConsoleUI {
         WorkforceDTO workforceDTO = new WorkforceDTO(
                 null,
                 workforceName,
-                UUID.fromString(componentType),
+                UUID.fromString(componentTypeController.getComponentTypeByName(componentType).getId().toString()),
                 vatRate,
                 totalPrice,
                 UUID.fromString(getProjectId()),
@@ -688,9 +692,7 @@ public class ConsoleUI {
 
 
     private void saveQuote(ProjectDTO projectDTO, ProjectController projectController) throws SQLException {
-        QuoteRepository quoteRepository = new QuoteRepository(connection);
-        QuoteService quoteService = new QuoteService(quoteRepository);
-        QuoteController quoteController = new QuoteController(quoteService);
+
 
         System.out.println(YELLOW + "+ Save Quote +" + RESET);
 

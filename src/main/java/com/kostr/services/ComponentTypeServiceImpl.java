@@ -58,12 +58,12 @@ public class ComponentTypeServiceImpl implements ComponetTypeService {
     }
 
     @Override
-    public ComponentType getComponentTypeById(String id) throws SQLException {
-        if (id.isEmpty()) {
-            logger.severe("ID field must be filled in");
+    public ComponentType getComponentTypeByName(String name) throws SQLException {
+        if (name.isEmpty()) {
+            logger.severe("Name field must be filled in");
             return null;
         } else {
-            return componentTypeRepository.getComponentTypeById(id);
+            return componentTypeRepository.getComponentTypeByName(name);
         }
     }
 }

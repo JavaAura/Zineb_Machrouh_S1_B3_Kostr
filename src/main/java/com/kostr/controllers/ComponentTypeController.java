@@ -71,14 +71,14 @@ public class ComponentTypeController {
         }
     }
 
-    public ComponentTypeDTO getComponentTypeById(String id) throws SQLException {
-        if (id == null || id.isEmpty()) {
-            System.out.println(RED + "Component Type ID is null or empty" + RESET);
+    public ComponentTypeDTO getComponentTypeByName(String name) throws SQLException {
+        if (name == null || name.isEmpty()) {
+            System.out.println(RED + "Component Name is null or empty" + RESET);
             return null;
         }
 
         try {
-            ComponentType componentType = componentTypeService.getComponentTypeById(id);
+            ComponentType componentType = componentTypeService.getComponentTypeByName(name);
             if (componentType != null) {
                 return ComponentTypeDTO.modelToDTO(componentType);
             } else {
