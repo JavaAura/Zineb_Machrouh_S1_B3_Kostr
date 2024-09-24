@@ -7,6 +7,7 @@ import main.java.com.kostr.repositories.interfaces.ClientRepositoryInterface;
 import java.sql.*;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 
 public class ClientRepository implements ClientRepositoryInterface {
@@ -82,7 +83,7 @@ public class ClientRepository implements ClientRepositoryInterface {
     }
 
     @Override
-    public Client getClientByEMail(String email) throws SQLException {
+    public Optional<Client> getClientByEMail(String email) throws SQLException {
         String query = "SELECT * FROM Clients WHERE email = ?";
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, email);
