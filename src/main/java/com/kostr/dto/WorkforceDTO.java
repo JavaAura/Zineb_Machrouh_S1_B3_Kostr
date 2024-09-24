@@ -40,10 +40,6 @@ public class WorkforceDTO extends ComponentDTO{
         this.workerProductivity = workerProductivity;
     }
 
-    public String[] getAttributes() {
-        return new String[]{getId().toString(), getName(), getType().toString(), String.valueOf(getVatRate()), String.valueOf(getTotalPrice()), getProjectId().toString(), String.valueOf(hourlyRate), String.valueOf(hoursWorked), String.valueOf(workerProductivity)};
-    }
-
     @Override
     public String toString() {
         return super.toString() +

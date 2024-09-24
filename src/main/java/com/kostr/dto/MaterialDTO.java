@@ -48,10 +48,7 @@ public class MaterialDTO extends ComponentDTO{
     public void setQualityCoefficient(double qualityCoefficient) {
         this.qualityCoefficient = qualityCoefficient;
     }
-
-    public String[] getAttributes() {
-        return new String[]{getId().toString(), getName(), getType().toString(), String.valueOf(getVatRate()), String.valueOf(getTotalPrice()), getProjectId().toString(), String.valueOf(unitCost), String.valueOf(quantity), String.valueOf(transportCost), String.valueOf(qualityCoefficient)};
-    }
+    
 
     @Override
     public String toString() {

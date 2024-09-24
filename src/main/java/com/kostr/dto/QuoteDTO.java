@@ -66,10 +66,6 @@ public class QuoteDTO {
         isAccepted = accepted;
     }
 
-    public String[] getAttributes() {
-        return new String[]{id.toString(), projectId.toString(), String.valueOf(estimatedCost), issueDate.toString(), validityDate.toString(), String.valueOf(isAccepted)};
-    }
-
     @Override
     public String toString() {
         return "QuoteDTO{" +

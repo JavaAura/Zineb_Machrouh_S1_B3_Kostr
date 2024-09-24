@@ -33,6 +33,11 @@ Here's an overview of the project structure for **Kostr**:
 - 🔨 **Component Types**: Add, update, delete, or view component types used in renovation projects.
 - 📊 **Financial Tracking**: Track the costs associated with each project, including materials and labor.
 
+## 🚩 Jira Board
+
+Here's a snapshot of the Jira board used for managing the project tasks and issues:
+[![Jira Board](./src/main/resources/Jira.jpeg)](./src/main/resources/Jira.jpeg)
+
 ## 🎨 UML Diagrams
 
 Here's a UML `Class Diagram` to give you a high-level view of the architecture:

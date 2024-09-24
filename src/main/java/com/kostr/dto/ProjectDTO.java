@@ -93,10 +93,6 @@ public class ProjectDTO {
         this.type = type;
     }
 
-    public String[] getAttributes() {
-        return new String[]{id.toString(), name, String.valueOf(profitMargin), String.valueOf(totalCost), String.valueOf(surfaceArea), type.toString(), status.toString(), clientId.toString()};
-    }
-
     @Override
     public String toString() {
         return "Project : {" +

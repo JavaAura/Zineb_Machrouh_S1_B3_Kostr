@@ -65,9 +65,6 @@ public class ComponentDTO {
         this.projectId = projectId;
     }
 
-    public String[] getAttributes() {
-        return new String[]{id.toString(), name, type.toString(), String.valueOf(vatRate), String.valueOf(totalPrice), projectId.toString()};
-    }
 
     @Override
     public String toString() {

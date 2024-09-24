@@ -68,9 +68,6 @@ public class ClientDTO {
         this.email = email;
     }
 
-    public String[] getAttributes() {
-        return new String[]{id.toString(), name, address,email, phoneNumber, String.valueOf(isProfessional)};
-    }
 
     @Override
     public String toString() {
